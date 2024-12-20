@@ -1,0 +1,34 @@
+{
+  "name": "oc4_indexnow",
+  "version": "1.0.0",
+  "description": "Playful Sparkle - IndexNow for OpenCart 4",
+  "main": "index.js",
+  "scripts": {
+    "compress": "node compress.js"
+  },
+  "keywords": [
+    "opencart",
+    "oc",
+    "playfulsparkle",
+    "yandex",
+    "bing",
+    "naver",
+    "opencart",
+    "yep",
+    "opencart3",
+    "indexnow",
+    "seznamcz"
+  ],
+  "author": "zsoltoroszlany82 <zsolt.oroszlany@playfulsparkle.com>",
+  "license": "GPL",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "csso": "^5.0.5",
+    "fs": "^0.0.1-security",
+    "terser": "^5.36.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/playfulsparkle/oc4_indexnow.git"
+  }
+}
