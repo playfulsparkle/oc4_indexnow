@@ -71,6 +71,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
 
         $data['feed_ps_indexnow_status'] = isset($config['feed_ps_indexnow_status']) ? (bool) $config['feed_ps_indexnow_status'] : false;
+        $data['feed_ps_indexnow_service_status'] = isset($config['feed_ps_indexnow_service_status']) ? (array) $config['feed_ps_indexnow_service_status'] : [];
+        $data['feed_ps_indexnow_service_key'] = isset($config['feed_ps_indexnow_service_key']) ? (array) $config['feed_ps_indexnow_service_key'] : [];
+        $data['feed_ps_indexnow_service_key_location'] = isset($config['feed_ps_indexnow_service_key_location']) ? (array) $config['feed_ps_indexnow_service_key_location'] : [];
 
         $this->load->model('localisation/language');
 
@@ -100,7 +103,17 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
 
-        $data['indexnow_services'] = $this->model_extension_ps_indexnow_feed_ps_indexnow->getIndexNowServiceList();
+        $indexnow_services = $this->model_extension_ps_indexnow_feed_ps_indexnow->getIndexNowServiceList();
+
+        $data['indexnow_services'] = [];
+
+        foreach ($indexnow_services as $service) {
+            $data['indexnow_services'][] = [
+                'service_id' => $service['service_id'],
+                'service_name' => $service['service_name'],
+                'service_help' => $this->language->get('help_service_' . $service['service_id']),
+            ];
+        }
 
         $data['text_contact'] = sprintf($this->language->get('text_contact'), self::EXTENSION_EMAIL, self::EXTENSION_EMAIL, self::EXTENSION_DOC);
 
