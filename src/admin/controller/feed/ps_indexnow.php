@@ -17,6 +17,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
      */
     const EXTENSION_DOC = 'https://github.com/playfulsparkle/oc4_indexnow.git';
 
+    private $data = [];
+
     /**
      * Displays the IndexNow settings page.
      *
@@ -61,6 +63,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $data['action'] = $this->url->link('extension/ps_indexnow/feed/ps_indexnow' . $separator . 'save', 'user_token=' . $this->session->data['user_token']);
         $data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=feed');
+        $data['fix_event_handler'] = $this->url->link('extension/ps_indexnow/feed/ps_indexnow' . $separator . 'fixEventHandler', 'user_token=' . $this->session->data['user_token']);
 
         $data['user_token'] = $this->session->data['user_token'];
 
@@ -127,11 +130,11 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $data['indexnow_services'] = $this->model_extension_ps_indexnow_feed_ps_indexnow->getIndexNowServiceList();
 
         $data['content_categories'] = array(
-            'categories' => $this->language->get('text_categories'),
-            'products' => $this->language->get('text_products'),
-            'manufacturers' => $this->language->get('text_manufacturers'),
+            'category' => $this->language->get('text_categories'),
+            'product' => $this->language->get('text_products'),
+            'manufacturer' => $this->language->get('text_manufacturers'),
             'information' => $this->language->get('text_information'),
-            'articles' => $this->language->get('text_articles'),
+            'article' => $this->language->get('text_articles'),
         );
 
         $data['text_contact'] = sprintf($this->language->get('text_contact'), self::EXTENSION_EMAIL, self::EXTENSION_EMAIL, self::EXTENSION_DOC);
@@ -203,10 +206,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function install(): void
     {
         if ($this->user->hasPermission('modify', 'extension/feed')) {
-            $service_key = $this->generateServiceKey();
 
             if (is_writable(DIR_OPENCART)) {
+                $service_key = $this->generateServiceKey();
+
                 $filename = DIR_OPENCART . $service_key . '.txt';
+
                 $handle = fopen($filename, 'w');
 
                 if ($handle) {
@@ -508,7 +513,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
 
         $events = [
-            // ['trigger' => 'admin/view/setting/setting/before', 'description' => '', 'actionName' => 'eventAdminViewSettingSettingBefore'],
+            ['trigger' => 'admin/controller/catalog/category' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCatalogCategorySaveAfter'],
+            ['trigger' => 'admin/controller/catalog/category' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCatalogCategoryDeleteBefore'],
         ];
 
         $result = 0;
@@ -538,19 +544,182 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         return $result > 0;
     }
 
-    public function eventAdminViewSettingSettingBefore(string &$route, array &$args, string &$template): void
+    public function eventAdminControllerCatalogCategorySaveAfter(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
         }
 
-        $this->load->language('extension/ps_indexnow/feed/ps_indexnow');
+        $json = json_decode($this->response->getOutput(), true);
+
+        if (isset($json['success'])) {
+            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+            $this->load->model('localisation/language');
+            $this->load->model('setting/store');
+
+            $languages = $this->model_localisation_language->getLanguages();
+
+            if (isset($json['category_id'])) {
+                $category_id = $json['category_id'];
+                $action = 'add';
+            } else if (isset($this->request->post['category_id'])) {
+                $category_id = $this->request->post['category_id'];
+                $action = 'update';
+            }
+
+            $stores = [0 => HTTP_CATALOG];
+
+            foreach ((array) $this->request->post['category_store'] as $store_id) {
+                if ($store_id === 0) {
+                    continue;
+                }
+
+                $store_info = $this->model_setting_store->getStore($store_id);
+
+                if ($store_info) {
+                    $stores[$store_info['store_id']] = $store_info['url'];
+                }
+            }
+
+            foreach ($stores as $store_id => $store_url) {
+                foreach ($languages as $language) {
+                    $link = $stores[$store_id] . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $category_id;
+
+                    if ($this->config->get('config_seo_url')) {
+                        $link = $this->rewrite($link, $store_id, $language['language_id']);
+                    }
+
+                    $data = [
+                        'url' => $link,
+                        'content_category' => 'category',
+                        'action' => $action,
+                        'store_id' => $store_id,
+                        'language_id' => $language['language_id'],
+                    ];
+
+                    $this->model_extension_ps_indexnow_feed_ps_indexnow->addQueue($data);
+                }
+            }
+        }
+    }
+
+    public function eventAdminControllerCatalogCategoryDeleteBefore(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
 
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+        $this->load->model('localisation/language');
+        $this->load->model('setting/store');
 
-        $headerViews = $this->model_extension_ps_indexnow_captcha_ps_indexnow->replaceAdminViewSettingSettingBefore($args);
+        $stores = [0 => HTTP_CATALOG];
 
-        $template = $this->replaceViews($route, $template, $headerViews);
+        foreach ($this->model_setting_store->getStores() as $store) {
+            $stores[$store['store_id']] = $store['url'];
+        }
+
+        $languages = $this->model_localisation_language->getLanguages();
+
+        foreach ((array) $this->request->post['selected'] as $category_id) {
+            foreach ($stores as $store_id => $store_url) {
+                foreach ($languages as $language) {
+                    $link = $stores[$store_id] . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $category_id;
+
+                    if ($this->config->get('config_seo_url')) {
+                        $link = $this->rewrite($link, $store_id, $language['language_id']);
+                    }
+
+                    $data = [
+                        'url' => $link,
+                        'content_category' => 'category',
+                        'action' => 'delete',
+                        'store_id' => $store_id,
+                        'language_id' => $language['language_id'],
+                    ];
+
+                    $this->model_extension_ps_indexnow_feed_ps_indexnow->addQueue($data);
+                }
+            }
+        }
+    }
+
+    private function rewrite(string $link, int $store_id, int $language_id): string
+    {
+        $url_info = parse_url($link);
+
+        // Build the url
+        $url = '';
+
+        if ($url_info['scheme']) {
+            $url .= $url_info['scheme'];
+        }
+
+        $url .= '://';
+
+        if ($url_info['host']) {
+            $url .= $url_info['host'];
+        }
+
+        if (isset($url_info['port'])) {
+            $url .= ':' . $url_info['port'];
+        }
+
+        parse_str($url_info['query'], $query);
+
+        // Start changing the URL query into a path
+        $paths = [];
+
+        // Parse the query into its separate parts
+        $parts = explode('&', $url_info['query']);
+
+        foreach ($parts as $part) {
+            $pair = explode('=', $part);
+
+            if (isset($pair[0])) {
+                $key = (string) $pair[0];
+            }
+
+            if (isset($pair[1])) {
+                $value = (string) $pair[1];
+            } else {
+                $value = '';
+            }
+
+            $index = md5($key . '-' . $value . '-store_id-' . $store_id . '-language_id-' . $language_id);
+
+            if (!isset($this->data[$index])) {
+                $this->data[$index] = $this->model_extension_ps_indexnow_feed_ps_indexnow->getSeoUrlByKeyValue((string) $key, (string) $value, $store_id, $language_id);
+            }
+
+            if ($this->data[$index]) {
+                $paths[] = $this->data[$index];
+
+                unset($query[$key]);
+            }
+        }
+
+        $sort_order = [];
+
+        foreach ($paths as $key => $value) {
+            $sort_order[$key] = $value['sort_order'];
+        }
+
+        array_multisort($sort_order, SORT_ASC, $paths);
+
+        // Build the path
+        $url .= str_replace('/index.php', '', $url_info['path']);
+
+        foreach ($paths as $result) {
+            $url .= '/' . $result['keyword'];
+        }
+
+        // Rebuild the URL query
+        if ($query) {
+            $url .= '?' . str_replace(['%2F'], ['/'], http_build_query($query));
+        }
+
+        return $url;
     }
 
     /**
