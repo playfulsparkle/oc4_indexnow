@@ -523,6 +523,15 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $events = [
             ['trigger' => 'admin/controller/catalog/category' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCatalogCategorySaveAfter'],
             ['trigger' => 'admin/controller/catalog/category' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCatalogCategoryDeleteBefore'],
+
+            ['trigger' => 'admin/controller/catalog/product' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCatalogProductSaveAfter'],
+            ['trigger' => 'admin/controller/catalog/product' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCatalogProductDeleteBefore'],
+
+            ['trigger' => 'admin/controller/catalog/manufacturer' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCatalogManufacturerSaveAfter'],
+            ['trigger' => 'admin/controller/catalog/manufacturer' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCatalogManufacturerDeleteBefore'],
+
+            ['trigger' => 'admin/controller/catalog/information' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCatalogInformationSaveAfter'],
+            ['trigger' => 'admin/controller/catalog/information' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCatalogInformationDeleteBefore'],
         ];
 
         $result = 0;
@@ -552,6 +561,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         return $result > 0;
     }
 
+    #region Category
     public function eventAdminControllerCatalogCategorySaveAfter(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
@@ -602,6 +612,166 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $item_id, $item_stores, $content_hash, $languages);
         }
     }
+    #endregion
+
+    #region Product
+    public function eventAdminControllerCatalogProductSaveAfter(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('product', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $json = json_decode($this->response->getOutput(), true);
+
+        if (isset($json['success'])) {
+            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+            $this->load->model('localisation/language');
+            $this->load->model('setting/store');
+
+            $languages = $this->model_localisation_language->getLanguages();
+            $content_hash = md5(json_encode($this->request->post));
+
+            if (isset($json['product_id'])) {
+                $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $json['product_id'], (array) $this->request->post['product_store'], $content_hash, $languages);
+            } else if (isset($this->request->post['product_id'])) {
+                $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $this->request->post['product_id'], (array) $this->request->post['product_store'], $content_hash, $languages);
+            }
+        }
+    }
+
+    public function eventAdminControllerCatalogProductDeleteBefore(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('product', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+        $this->load->model('localisation/language');
+        $this->load->model('setting/store');
+
+        $item_stores = $this->model_setting_store->getStores();
+        $languages = $this->model_localisation_language->getLanguages();
+        $content_hash = md5(json_encode($this->request->post));
+
+        foreach ((array) $this->request->post['selected'] as $item_id) {
+            $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $item_id, $item_stores, $content_hash, $languages);
+        }
+    }
+    #endregion
+
+    #region Manufacturer
+    public function eventAdminControllerCatalogManufacturerSaveAfter(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('manufacturer', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $json = json_decode($this->response->getOutput(), true);
+
+        if (isset($json['success'])) {
+            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+            $this->load->model('localisation/language');
+            $this->load->model('setting/store');
+
+            $languages = $this->model_localisation_language->getLanguages();
+            $content_hash = md5(json_encode($this->request->post));
+
+            if (isset($json['manufacturer_id'])) {
+                $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $json['manufacturer_id'], (array) $this->request->post['manufacturer_store'], $content_hash, $languages);
+            } else if (isset($this->request->post['manufacturer_id'])) {
+                $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $this->request->post['manufacturer_id'], (array) $this->request->post['manufacturer_store'], $content_hash, $languages);
+            }
+        }
+    }
+
+    public function eventAdminControllerCatalogManufacturerDeleteBefore(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('manufacturer', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+        $this->load->model('localisation/language');
+        $this->load->model('setting/store');
+
+        $item_stores = $this->model_setting_store->getStores();
+        $languages = $this->model_localisation_language->getLanguages();
+        $content_hash = md5(json_encode($this->request->post));
+
+        foreach ((array) $this->request->post['selected'] as $item_id) {
+            $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $item_id, $item_stores, $content_hash, $languages);
+        }
+    }
+    #endregion
+
+    #region Information
+    public function eventAdminControllerCatalogInformationSaveAfter(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('information', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $json = json_decode($this->response->getOutput(), true);
+
+        if (isset($json['success'])) {
+            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+            $this->load->model('localisation/language');
+            $this->load->model('setting/store');
+
+            $languages = $this->model_localisation_language->getLanguages();
+            $content_hash = md5(json_encode($this->request->post));
+
+            if (isset($json['information_id'])) {
+                $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $json['information_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+            } else if (isset($this->request->post['information_id'])) {
+                $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $this->request->post['information_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+            }
+        }
+    }
+
+    public function eventAdminControllerCatalogInformationDeleteBefore(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('information', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+        $this->load->model('localisation/language');
+        $this->load->model('setting/store');
+
+        $item_stores = $this->model_setting_store->getStores();
+        $languages = $this->model_localisation_language->getLanguages();
+        $content_hash = md5(json_encode($this->request->post));
+
+        foreach ((array) $this->request->post['selected'] as $item_id) {
+            $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $item_id, $item_stores, $content_hash, $languages);
+        }
+    }
+    #endregion
 
     private function addToQueueItemData(string $item_link, int $item_id, array $item_stores, string $content_hash, array $languages): void
     {
