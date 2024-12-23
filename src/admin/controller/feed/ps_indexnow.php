@@ -911,13 +911,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
+        $this->load->model('cms/article');
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = 'd' . md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $article_id) {
-            $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=' . (int) $article_id . '&topic_id=%s', $item_stores, $content_hash, $languages);
+            $article_info = $this->model_cms_article->getArticle($article_id);
+
+            $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=' . (int) $article_id . '&topic_id=' . $article_info['topic_id'], $item_stores, $content_hash, $languages);
         }
     }
     #endregion
