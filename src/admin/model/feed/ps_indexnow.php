@@ -18,6 +18,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
             `language_id` INT DEFAULT NULL,
             `date_added` DATETIME NOT NULL,
             PRIMARY KEY (`queue_id`),
+            UNIQUE KEY `url_store_unique` (`url`, `store_id`),
             KEY `content_hash_index` (`content_hash`),
             KEY `date_added_index` (`date_added`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -103,7 +104,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         }
 
         $this->db->query("
-            INSERT INTO `" . DB_PREFIX . "ps_indexnow_queue` (`url`, `content_hash`, `store_id`, `language_id`, `date_added`)
+            INSERT IGNORE INTO `" . DB_PREFIX . "ps_indexnow_queue` (`url`, `content_hash`, `store_id`, `language_id`, `date_added`)
             VALUES ('" . $this->db->escape($data['url']) . "', '" . $this->db->escape($data['content_hash']) . "', '" . (int) $data['store_id'] . "', '" . (int) $data['language_id'] . "', NOW())
         ");
     }
