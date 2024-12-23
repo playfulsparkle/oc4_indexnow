@@ -58,6 +58,7 @@ $_['text_categories']                     = 'Categories on your site are added, 
 $_['text_products']                       = 'Products on your site are added, updated, or deleted';
 $_['text_manufacturers']                  = 'Manufacturers on your site are added, updated, or deleted';
 $_['text_information']                    = 'Information Pages on your site are added, updated, or deleted';
+$_['text_topics']                         = 'Article topics on your site are added, updated, or deleted';
 $_['text_articles']                       = 'Articles on your site are added, updated, or deleted';
 
 // Column

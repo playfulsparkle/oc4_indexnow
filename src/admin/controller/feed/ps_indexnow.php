@@ -134,6 +134,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             'product' => $this->language->get('text_products'),
             'manufacturer' => $this->language->get('text_manufacturers'),
             'information' => $this->language->get('text_information'),
+            'topic' => $this->language->get('text_topics'),
             'article' => $this->language->get('text_articles'),
         );
 
@@ -532,6 +533,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             ['trigger' => 'admin/controller/catalog/information' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCatalogInformationSaveAfter'],
             ['trigger' => 'admin/controller/catalog/information' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCatalogInformationDeleteBefore'],
+
+            ['trigger' => 'admin/controller/cms/topic' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCmsTopicSaveAfter'],
+            ['trigger' => 'admin/controller/cms/topic' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCmsTopicDeleteBefore'],
+
+            ['trigger' => 'admin/controller/cms/article' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCmsArticleSaveAfter'],
+            ['trigger' => 'admin/controller/cms/article' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCmsArticleDeleteBefore'],
         ];
 
         $result = 0;
@@ -580,7 +587,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = md5(json_encode($this->request->post));
+            $content_hash = 'ae' . md5(json_encode($this->request->post));
 
             if (isset($json['category_id'])) {
                 $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $json['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
@@ -606,7 +613,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = md5(json_encode($this->request->post));
+        $content_hash = 'd' . md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $item_id) {
             $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $item_id, $item_stores, $content_hash, $languages);
@@ -633,7 +640,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = md5(json_encode($this->request->post));
+            $content_hash = 'ae' . md5(json_encode($this->request->post));
 
             if (isset($json['product_id'])) {
                 $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $json['product_id'], (array) $this->request->post['product_store'], $content_hash, $languages);
@@ -659,7 +666,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = md5(json_encode($this->request->post));
+        $content_hash = 'd' . md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $item_id) {
             $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $item_id, $item_stores, $content_hash, $languages);
@@ -686,7 +693,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = md5(json_encode($this->request->post));
+            $content_hash = 'ae' . md5(json_encode($this->request->post));
 
             if (isset($json['manufacturer_id'])) {
                 $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $json['manufacturer_id'], (array) $this->request->post['manufacturer_store'], $content_hash, $languages);
@@ -712,7 +719,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = md5(json_encode($this->request->post));
+        $content_hash = 'd' . md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $item_id) {
             $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $item_id, $item_stores, $content_hash, $languages);
@@ -739,7 +746,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = md5(json_encode($this->request->post));
+            $content_hash = 'ae' . md5(json_encode($this->request->post));
 
             if (isset($json['information_id'])) {
                 $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $json['information_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
@@ -765,10 +772,116 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = md5(json_encode($this->request->post));
+        $content_hash = 'd' . md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $item_id) {
             $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $item_id, $item_stores, $content_hash, $languages);
+        }
+    }
+    #endregion
+
+    #region Topic
+    public function eventAdminControllerCmsTopicSaveAfter(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('topic', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $json = json_decode($this->response->getOutput(), true);
+
+        if (isset($json['success'])) {
+            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+            $this->load->model('localisation/language');
+            $this->load->model('setting/store');
+
+            $languages = $this->model_localisation_language->getLanguages();
+            $content_hash = 'ae' . md5(json_encode($this->request->post));
+
+            if (isset($json['topic_id'])) {
+                $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=%s', $json['topic_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+            } else if (isset($this->request->post['topic_id'])) {
+                $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=%s', $this->request->post['topic_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+            }
+        }
+    }
+
+    public function eventAdminControllerCmsTopicDeleteBefore(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('topic', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+        $this->load->model('localisation/language');
+        $this->load->model('setting/store');
+
+        $item_stores = $this->model_setting_store->getStores();
+        $languages = $this->model_localisation_language->getLanguages();
+        $content_hash = 'd' . md5(json_encode($this->request->post));
+
+        foreach ((array) $this->request->post['selected'] as $item_id) {
+            $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=%s', $item_id, $item_stores, $content_hash, $languages);
+        }
+    }
+    #endregion
+
+    #region Article
+    public function eventAdminControllerCmsArticleSaveAfter(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('article', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $json = json_decode($this->response->getOutput(), true);
+
+        if (isset($json['success'])) {
+            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+            $this->load->model('localisation/language');
+            $this->load->model('setting/store');
+
+            $languages = $this->model_localisation_language->getLanguages();
+            $content_hash = 'ae' . md5(json_encode($this->request->post));
+
+            if (isset($json['article_id'])) {
+                $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=%s&topic_id=%s', $json['article_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+            } else if (isset($this->request->post['article_id'])) {
+                $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=%s&topic_id=%s', $this->request->post['article_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+            }
+        }
+    }
+
+    public function eventAdminControllerCmsArticleDeleteBefore(string &$route, array &$args): void
+    {
+        if (!$this->config->get('feed_ps_indexnow_status')) {
+            return;
+        }
+
+        if (!in_array('article', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
+        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+        $this->load->model('localisation/language');
+        $this->load->model('setting/store');
+
+        $item_stores = $this->model_setting_store->getStores();
+        $languages = $this->model_localisation_language->getLanguages();
+        $content_hash = 'd' . md5(json_encode($this->request->post));
+
+        foreach ((array) $this->request->post['selected'] as $item_id) {
+            $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=%s&topic_id=%s', $item_id, $item_stores, $content_hash, $languages);
         }
     }
     #endregion
