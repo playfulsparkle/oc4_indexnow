@@ -594,20 +594,20 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
 
-        $category_stores = $this->model_setting_store->getStores();
+        $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
-        foreach ((array) $this->request->post['selected'] as $category_id) {
-            $this->processCategory($category_id, $category_stores, $content_hash, $languages);
+        foreach ((array) $this->request->post['selected'] as $item_id) {
+            $this->processCategory($item_id, $item_stores, $content_hash, $languages);
         }
     }
 
-    private function processCategory(int $category_id, array $category_stores, string $content_hash, array $languages): void
+    private function processCategory(int $item_id, array $item_stores, string $content_hash, array $languages): void
     {
         $stores = [0 => HTTP_CATALOG];
 
-        foreach ($category_stores as $store_info) {
+        foreach ($item_stores as $store_info) {
             if (is_array($store_info)) {
                 $stores[$store_info['store_id']] = $store_info['url'];
             } else if ($store_info > 0 && $store_data = $this->model_setting_store->getStore($store_info)) {
@@ -617,7 +617,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         foreach ($stores as $store_id => $store_url) {
             foreach ($languages as $language) {
-                $link = $store_url . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $category_id;
+                $link = $store_url . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $item_id;
 
                 if ($this->config->get('config_seo_url')) {
                     $link = $this->rewrite($link, $store_id, $language['language_id']);
@@ -625,7 +625,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
                 $data = [
                     'url' => $link,
-                    'content_category' => 'category',
                     'content_hash' => $content_hash,
                     'store_id' => $store_id,
                     'language_id' => $language['language_id'],
