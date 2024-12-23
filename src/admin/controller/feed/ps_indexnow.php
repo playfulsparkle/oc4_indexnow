@@ -573,9 +573,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $content_hash = md5(json_encode($this->request->post));
 
             if (isset($json['category_id'])) {
-                $this->processCategory($json['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $json['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
             } else if (isset($this->request->post['category_id'])) {
-                $this->processCategory($this->request->post['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $this->request->post['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
             }
         }
     }
@@ -599,11 +599,11 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $item_id) {
-            $this->processCategory($item_id, $item_stores, $content_hash, $languages);
+            $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $item_id, $item_stores, $content_hash, $languages);
         }
     }
 
-    private function processCategory(int $item_id, array $item_stores, string $content_hash, array $languages): void
+    private function addToQueueItemData(string $item_link, int $item_id, array $item_stores, string $content_hash, array $languages): void
     {
         $stores = [0 => HTTP_CATALOG];
 
@@ -617,14 +617,14 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         foreach ($stores as $store_id => $store_url) {
             foreach ($languages as $language) {
-                $link = $store_url . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $item_id;
+                $url = $store_url . sprintf($item_link, $language['code'], $item_id);
 
                 if ($this->config->get('config_seo_url')) {
-                    $link = $this->rewrite($link, $store_id, $language['language_id']);
+                    $url = $this->rewrite($url, $store_id, $language['language_id']);
                 }
 
                 $data = [
-                    'url' => $link,
+                    'url' => $url,
                     'content_hash' => $content_hash,
                     'store_id' => $store_id,
                     'language_id' => $language['language_id'],
