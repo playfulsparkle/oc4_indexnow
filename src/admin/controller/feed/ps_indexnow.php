@@ -587,12 +587,18 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = 'ae' . md5(json_encode($this->request->post));
+
+            $category_store = (array) $this->request->post['category_store'];
+            $post_data = $this->request->post;
+
+            unset($post_data['category_store']);
+
+            $content_hash = 'ae' . md5(json_encode($post_data));
 
             if (isset($json['category_id'])) {
-                $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $json['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $json['category_id'], $category_store, $content_hash, $languages);
             } else if (isset($this->request->post['category_id'])) {
-                $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $this->request->post['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/category&language=%s&path=%s', $this->request->post['category_id'], $category_store, $content_hash, $languages);
             }
         }
     }
@@ -640,12 +646,18 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = 'ae' . md5(json_encode($this->request->post));
+
+            $product_store = (array) $this->request->post['product_store'];
+            $post_data = $this->request->post;
+
+            unset($post_data['product_store']);
+
+            $content_hash = 'ae' . md5(json_encode($post_data));
 
             if (isset($json['product_id'])) {
-                $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $json['product_id'], (array) $this->request->post['product_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $json['product_id'], $product_store, $content_hash, $languages);
             } else if (isset($this->request->post['product_id'])) {
-                $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $this->request->post['product_id'], (array) $this->request->post['product_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=%s', $this->request->post['product_id'], $product_store, $content_hash, $languages);
             }
         }
     }
@@ -693,12 +705,18 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = 'ae' . md5(json_encode($this->request->post));
+
+            $manufacturer_store = (array) $this->request->post['manufacturer_store'];
+            $post_data = $this->request->post;
+
+            unset($post_data['manufacturer_store']);
+
+            $content_hash = 'ae' . md5(json_encode($post_data));
 
             if (isset($json['manufacturer_id'])) {
-                $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $json['manufacturer_id'], (array) $this->request->post['manufacturer_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $json['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
             } else if (isset($this->request->post['manufacturer_id'])) {
-                $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $this->request->post['manufacturer_id'], (array) $this->request->post['manufacturer_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=%s', $this->request->post['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
             }
         }
     }
@@ -746,12 +764,18 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = 'ae' . md5(json_encode($this->request->post));
+
+            $information_store = (array) $this->request->post['information_store'];
+            $post_data = $this->request->post;
+
+            unset($post_data['information_store']);
+
+            $content_hash = 'ae' . md5(json_encode($post_data));
 
             if (isset($json['information_id'])) {
-                $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $json['information_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $json['information_id'], $information_store, $content_hash, $languages);
             } else if (isset($this->request->post['information_id'])) {
-                $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $this->request->post['information_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=%s', $this->request->post['information_id'], $information_store, $content_hash, $languages);
             }
         }
     }
@@ -799,12 +823,18 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = 'ae' . md5(json_encode($this->request->post));
+
+            $topic_store = (array) $this->request->post['topic_store'];
+            $post_data = $this->request->post;
+
+            unset($post_data['topic_store']);
+
+            $content_hash = 'ae' . md5(json_encode($post_data));
 
             if (isset($json['topic_id'])) {
-                $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=%s', $json['topic_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=%s', $json['topic_id'], $topic_store, $content_hash, $languages);
             } else if (isset($this->request->post['topic_id'])) {
-                $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=%s', $this->request->post['topic_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=%s', $this->request->post['topic_id'], $topic_store, $content_hash, $languages);
             }
         }
     }
@@ -852,12 +882,18 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
-            $content_hash = 'ae' . md5(json_encode($this->request->post));
+
+            $article_store = (array) $this->request->post['article_store'];
+            $post_data = $this->request->post;
+
+            unset($post_data['article_store']);
+
+            $content_hash = 'ae' . md5(json_encode($post_data));
 
             if (isset($json['article_id'])) {
-                $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=%s&topic_id=%s', $json['article_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=%s&topic_id=%s', $json['article_id'], $article_store, $content_hash, $languages);
             } else if (isset($this->request->post['article_id'])) {
-                $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=%s&topic_id=%s', $this->request->post['article_id'], (array) $this->request->post['information_store'], $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=%s&topic_id=%s', $this->request->post['article_id'], $article_store, $content_hash, $languages);
             }
         }
     }
