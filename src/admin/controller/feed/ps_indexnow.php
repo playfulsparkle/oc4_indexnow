@@ -550,6 +550,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             return;
         }
 
+        if (!in_array('category', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
         $json = json_decode($this->response->getOutput(), true);
 
         if (isset($json['success'])) {
@@ -560,43 +564,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $languages = $this->model_localisation_language->getLanguages();
 
             if (isset($json['category_id'])) {
-                $category_id = $json['category_id'];
+                $this->processCategory($json['category_id'], (array) $this->request->post['category_store'], $languages);
             } else if (isset($this->request->post['category_id'])) {
-                $category_id = $this->request->post['category_id'];
-            }
-
-            $stores = [0 => HTTP_CATALOG];
-
-            foreach ((array) $this->request->post['category_store'] as $store_id) {
-                if ($store_id === 0) {
-                    continue;
-                }
-
-                $store_info = $this->model_setting_store->getStore($store_id);
-
-                if ($store_info) {
-                    $stores[$store_info['store_id']] = $store_info['url'];
-                }
-            }
-
-            foreach ($stores as $store_id => $store_url) {
-                foreach ($languages as $language) {
-                    $link = $stores[$store_id] . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $category_id;
-
-                    if ($this->config->get('config_seo_url')) {
-                        $link = $this->rewrite($link, $store_id, $language['language_id']);
-                    }
-
-                    $data = [
-                        'url' => $link,
-                        'content_category' => 'category',
-                        'content_hash' => md5(json_encode($this->request->post)),
-                        'store_id' => $store_id,
-                        'language_id' => $language['language_id'],
-                    ];
-
-                    $this->model_extension_ps_indexnow_feed_ps_indexnow->addQueue($data);
-                }
+                $this->processCategory($this->request->post['category_id'], (array) $this->request->post['category_store'], $languages);
             }
         }
     }
@@ -607,37 +577,51 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             return;
         }
 
+        if (!in_array('category', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
+            return;
+        }
+
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
 
-        $stores = [0 => HTTP_CATALOG];
-
-        foreach ($this->model_setting_store->getStores() as $store) {
-            $stores[$store['store_id']] = $store['url'];
-        }
-
+        $category_store = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
 
         foreach ((array) $this->request->post['selected'] as $category_id) {
-            foreach ($stores as $store_id => $store_url) {
-                foreach ($languages as $language) {
-                    $link = $stores[$store_id] . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $category_id;
+            $this->processCategory($category_id, $category_store, $languages);
+        }
+    }
 
-                    if ($this->config->get('config_seo_url')) {
-                        $link = $this->rewrite($link, $store_id, $language['language_id']);
-                    }
+    private function processCategory($category_id, $category_stores, $languages)
+    {
+        $stores = [0 => HTTP_CATALOG];
 
-                    $data = [
-                        'url' => $link,
-                        'content_category' => 'category',
-                        'content_hash' => md5(json_encode($this->request->post)),
-                        'store_id' => $store_id,
-                        'language_id' => $language['language_id'],
-                    ];
+        foreach ($category_stores as $store_info) {
+            if (is_array($store_info)) {
+                $stores[$store_info['store_id']] = $store_info['url'];
+            } else if ($store_info > 0 && $store_data = $this->model_setting_store->getStore($store_info)) {
+                $stores[$store_data['store_id']] = $store_data['url'];
+            }
+        }
 
-                    $this->model_extension_ps_indexnow_feed_ps_indexnow->addQueue($data);
+        foreach ($stores as $store_id => $store_url) {
+            foreach ($languages as $language) {
+                $link = $stores[$store_id] . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $category_id;
+
+                if ($this->config->get('config_seo_url')) {
+                    $link = $this->rewrite($link, $store_id, $language['language_id']);
                 }
+
+                $data = [
+                    'url' => $link,
+                    'content_category' => 'category',
+                    'content_hash' => md5(json_encode($this->request->post)),
+                    'store_id' => $store_id,
+                    'language_id' => $language['language_id'],
+                ];
+
+                $this->model_extension_ps_indexnow_feed_ps_indexnow->addQueue($data);
             }
         }
     }
