@@ -17,7 +17,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
      */
     const EXTENSION_DOC = 'https://github.com/playfulsparkle/oc4_indexnow.git';
 
-    private $data = [];
+    private $seo_url_values = [];
 
     /**
      * Displays the IndexNow settings page.
@@ -561,10 +561,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             if (isset($json['category_id'])) {
                 $category_id = $json['category_id'];
-                $action = 'add';
             } else if (isset($this->request->post['category_id'])) {
                 $category_id = $this->request->post['category_id'];
-                $action = 'update';
             }
 
             $stores = [0 => HTTP_CATALOG];
@@ -592,7 +590,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                     $data = [
                         'url' => $link,
                         'content_category' => 'category',
-                        'action' => $action,
+                        'content_hash' => md5(json_encode($this->request->post)),
                         'store_id' => $store_id,
                         'language_id' => $language['language_id'],
                     ];
@@ -633,7 +631,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                     $data = [
                         'url' => $link,
                         'content_category' => 'category',
-                        'action' => 'delete',
+                        'content_hash' => md5(json_encode($this->request->post)),
                         'store_id' => $store_id,
                         'language_id' => $language['language_id'],
                     ];
@@ -644,20 +642,20 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
     }
 
-    private function rewrite(string $link, int $store_id, int $language_id): string
+    private function rewrite($link, $store_id, $language_id)
     {
         $url_info = parse_url($link);
 
         // Build the url
         $url = '';
 
-        if ($url_info['scheme']) {
+        if (isset($url_info['scheme'])) {
             $url .= $url_info['scheme'];
         }
 
         $url .= '://';
 
-        if ($url_info['host']) {
+        if (isset($url_info['host'])) {
             $url .= $url_info['host'];
         }
 
@@ -676,30 +674,23 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         foreach ($parts as $part) {
             $pair = explode('=', $part);
 
-            if (isset($pair[0])) {
-                $key = (string) $pair[0];
+            $key = isset($pair[0]) ? (string) $pair[0] : '';
+            $value = isset($pair[1]) ? (string) $pair[1] : '';
+
+            $index = md5($key . '-' . $value . '-' . $store_id . '-' . $language_id);
+
+            if (!isset($this->seo_url_values[$index])) {
+                $this->seo_url_values[$index] = $this->model_extension_ps_indexnow_feed_ps_indexnow->getSeoUrlByKeyValue($key, $value, $store_id, $language_id);
             }
 
-            if (isset($pair[1])) {
-                $value = (string) $pair[1];
-            } else {
-                $value = '';
-            }
-
-            $index = md5($key . '-' . $value . '-store_id-' . $store_id . '-language_id-' . $language_id);
-
-            if (!isset($this->data[$index])) {
-                $this->data[$index] = $this->model_extension_ps_indexnow_feed_ps_indexnow->getSeoUrlByKeyValue((string) $key, (string) $value, $store_id, $language_id);
-            }
-
-            if ($this->data[$index]) {
-                $paths[] = $this->data[$index];
+            if ($this->seo_url_values[$index]) {
+                $paths[] = $this->seo_url_values[$index];
 
                 unset($query[$key]);
             }
         }
 
-        $sort_order = [];
+        $sort_order = array();
 
         foreach ($paths as $key => $value) {
             $sort_order[$key] = $value['sort_order'];
