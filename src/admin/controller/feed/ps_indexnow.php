@@ -438,38 +438,46 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $charactersLength = strlen($characters);
         $randomKey = '';
 
-        // Try different secure random number generators in order of preference
+        // Preferred: Use random_bytes for secure key generation
         if (function_exists('random_bytes')) {
             try {
+                $bytes = random_bytes($length);
+
                 for ($i = 0; $i < $length; $i++) {
-                    $randomKey .= $characters[ord(random_bytes(1)) % $charactersLength];
+                    $randomKey .= $characters[ord($bytes[$i]) % $charactersLength];
                 }
+
                 return $randomKey;
-            } catch (\Exception $e) {
-                // Fall through to next method
+            } catch (Exception $e) {
+                // Fallback to the next method
             }
         }
 
+        // Fallback: Use openssl_random_pseudo_bytes if random_bytes is unavailable
         if (function_exists('openssl_random_pseudo_bytes')) {
             try {
+                $bytes = openssl_random_pseudo_bytes($length);
+
                 for ($i = 0; $i < $length; $i++) {
-                    $randomKey .= $characters[ord(openssl_random_pseudo_bytes(1)) % $charactersLength];
+                    $randomKey .= $characters[ord($bytes[$i]) % $charactersLength];
                 }
+
                 return $randomKey;
-            } catch (\Exception $e) {
-                // Fall through to next method
+            } catch (Exception $e) {
+                // Fallback to the next method
             }
         }
 
-        // Fallback to random_int if available
+        // Fallback: Use random_int for cryptographic randomness
         if (function_exists('random_int')) {
             for ($i = 0; $i < $length; $i++) {
                 $randomKey .= $characters[random_int(0, $charactersLength - 1)];
             }
+
             return $randomKey;
         }
 
-        // Last resort fallback to mt_rand
+        // Last Resort: Use mt_rand (not cryptographically secure)
         for ($i = 0; $i < $length; $i++) {
             $randomKey .= $characters[mt_rand(0, $charactersLength - 1)];
         }
@@ -562,11 +570,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('setting/store');
 
             $languages = $this->model_localisation_language->getLanguages();
+            $content_hash = md5(json_encode($this->request->post));
 
             if (isset($json['category_id'])) {
-                $this->processCategory($json['category_id'], (array) $this->request->post['category_store'], $languages);
+                $this->processCategory($json['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
             } else if (isset($this->request->post['category_id'])) {
-                $this->processCategory($this->request->post['category_id'], (array) $this->request->post['category_store'], $languages);
+                $this->processCategory($this->request->post['category_id'], (array) $this->request->post['category_store'], $content_hash, $languages);
             }
         }
     }
@@ -585,15 +594,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
 
-        $category_store = $this->model_setting_store->getStores();
+        $category_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
+        $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $category_id) {
-            $this->processCategory($category_id, $category_store, $languages);
+            $this->processCategory($category_id, $category_stores, $content_hash, $languages);
         }
     }
 
-    private function processCategory($category_id, $category_stores, $languages)
+    private function processCategory(int $category_id, array $category_stores, string $content_hash, array $languages): void
     {
         $stores = [0 => HTTP_CATALOG];
 
@@ -607,7 +617,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         foreach ($stores as $store_id => $store_url) {
             foreach ($languages as $language) {
-                $link = $stores[$store_id] . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $category_id;
+                $link = $store_url . 'index.php?route=product/category&language=' . $language['code'] . '&path=' . $category_id;
 
                 if ($this->config->get('config_seo_url')) {
                     $link = $this->rewrite($link, $store_id, $language['language_id']);
@@ -616,7 +626,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 $data = [
                     'url' => $link,
                     'content_category' => 'category',
-                    'content_hash' => md5(json_encode($this->request->post)),
+                    'content_hash' => $content_hash,
                     'store_id' => $store_id,
                     'language_id' => $language['language_id'],
                 ];
