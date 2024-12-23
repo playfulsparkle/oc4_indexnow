@@ -11,7 +11,6 @@
 						<option value="{{ store.href }}" {% if store.store_id == store_id %} selected{% endif %}>{{ store.name }}</option>
 						{% endfor %}
 					</select>&nbsp;
-					<button type="button" id="run-queue" data-bs-toggle="tooltip" title="{{ button_run_queue }}" class="btn btn-success"><i class="fa-solid fa-play"></i> {{ button_run_queue }}</button>&nbsp;
 					<button type="submit" form="form-feed" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save"></i></button>&nbsp;
 					<a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply"></i></a>
 				</div>
@@ -33,6 +32,7 @@
 
 					<ul class="nav nav-tabs">
 						<li class="nav-item"><a href="#tab-general" data-bs-toggle="tab" class="nav-link active">{{ tab_general }}</a></li>
+						<li class="nav-item"><a href="#tab-manual-submit" data-bs-toggle="tab" class="nav-link">{{ tab_manual_submit }}</a></li>
 						<li class="nav-item"><a href="#tab-queue" data-bs-toggle="tab" class="nav-link">{{ tab_queue }}</a></li>
 						<li class="nav-item"><a href="#tab-log" data-bs-toggle="tab" class="nav-link">{{ tab_log }}</a></li>
 						<li class="nav-item"><a href="#tab-support" data-bs-toggle="tab" class="nav-link">{{ tab_help_and_support }}</a></li>
@@ -106,6 +106,20 @@
 										</span>
 									</div>
 									<div class="form-text">{{ help_service_key_location }}</div>
+								</div>
+							</div>
+
+						</div>
+            <div class="tab-pane" id="tab-manual-submit">
+
+							<textarea name="url_list" id="url-list" wrap="off" rows="15" id="input-error-log" class="form-control"></textarea>
+              <br/>
+							<div class="row row-cols-2">
+								<div class="col">
+									<button type="button" id="button-submit-url-list" data-bs-toggle="tooltip" title="{{ button_submit_url_list }}" class="btn btn-success w-100"><i class="fa-solid fa-play"></i> {{ button_submit_url_list }}</button>
+								</div>
+								<div class="col">
+									<button type="button" id="button-clear-url-list" data-bs-toggle="tooltip" title="{{ button_clear_url_list }}" class="btn btn-danger w-100"><i class="fa-solid fa-trash"></i> {{ button_clear_url_list }}</button>
 								</div>
 							</div>
 
@@ -208,13 +222,13 @@
 		$('#queue-content').load(this.href);
 	});
 
-	$('#category').delegate('.btn-danger', 'click', function () {
+	$('#queue-content').delegate('.btn-remove-item', 'click', function () {
 		var element = this;
 
 		$.ajax({
-			url: 'index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}remove_queue&store_id={{ store_id }}&user_token={{ user_token }}',
+			url: 'index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}remove_queue&user_token={{ user_token }}',
 			type: 'post',
-			data: 'store_id=' + $('input[name=\'store_id\']').val() + '&queue_id=' + encodeURIComponent(this.value),
+			data: 'queue_id=' + encodeURIComponent(this.value),
 			dataType: 'json',
 			crossDomain: true,
 			beforeSend: function () {
