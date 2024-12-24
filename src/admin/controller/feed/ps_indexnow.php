@@ -455,6 +455,36 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->response->setOutput($this->load->view('extension/ps_indexnow/feed/ps_indexnow_log', $data));
     }
 
+    public function clear_log(): void
+    {
+        $this->load->language('extension/ps_indexnow/feed/ps_indexnow');
+
+        $json = [];
+
+        if (!$this->user->hasPermission('modify', 'extension/ps_indexnow/feed/ps_indexnow')) {
+            $json['error'] = $this->language->get('error_permission');
+        }
+
+        if (!$json) {
+            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+
+            if (isset($this->request->post['store_id'])) {
+                $store_id = (int) $this->request->post['store_id'];
+            } else {
+                $store_id = 0;
+            }
+
+            if ($this->model_extension_ps_indexnow_feed_ps_indexnow->clearLog($store_id)) {
+                $json['success'] = $this->language->get('text_success_clear_log');
+            } else {
+                $json['error'] = $this->language->get('error_clear_log');
+            }
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
     private function generateServiceKey(): string
     {
         $length = 32;

@@ -134,10 +134,27 @@
 
 							<div id="queue-content"></div>
 
+							<div class="row row-cols-2">
+								<div class="col">
+									<button type="button" id="button-submit-queue" data-bs-toggle="tooltip" title="{{ button_submit_queue }}" class="btn btn-success w-100"><i class="fa-solid fa-paper-plane"></i> {{ button_submit_queue }}</button>
+								</div>
+								<div class="col">
+									<button type="button" id="button-clear-queue" data-bs-toggle="tooltip" title="{{ button_clear_queue }}" class="btn btn-danger w-100"><i class="fa-solid fa-trash"></i> {{ button_clear_queue }}</button>
+								</div>
+							</div>
+
 						</div>
             <div class="tab-pane" id="tab-log">
 
 							<div id="log-content"></div>
+
+							<div class="row mb-3">
+								<div class="col-sm-6 offset-6">
+									<button type="button" id="button-clear-log" data-bs-toggle="tooltip" title="{{ button_clear_log }}" class="btn btn-danger w-100">
+										<i class="fa-solid fa-trash"></i> {{ button_clear_log }}
+									</button>
+								</div>
+							</div>
 
 						</div>
 						<div id="tab-support" class="tab-pane">
@@ -269,6 +286,37 @@
 		e.preventDefault();
 
 		$('#log-content').load(this.href);
+	});
+
+	$('#button-clear-log').on('click', function () {
+		var node = $(this);
+
+		$.ajax({
+			url: 'index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}clear_log&store_id={{ store_id }}&user_token={{ user_token }}',
+			dataType: 'json',
+			beforeSend: function () {
+				$(node).button('loading');
+			},
+			complete: function () {
+				$(node).button('reset');
+			},
+			success: function (json) {
+				$('.alert-dismissible').remove();
+
+				if (json['error']) {
+					$('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+				}
+
+				if (json['success']) {
+					$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+
+					$('#log-content').load('index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}log&store_id={{ store_id }}&user_token={{ user_token }}');
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
 	});
 
 	$('button[data-fix-action]').on('click', function () {
