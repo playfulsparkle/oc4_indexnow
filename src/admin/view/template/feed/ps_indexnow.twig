@@ -280,6 +280,37 @@
 		});
 	});
 
+	$('#button-clear-queue').on('click', function () {
+		var node = $(this);
+
+		$.ajax({
+			url: 'index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}clear_queue&store_id={{ store_id }}&user_token={{ user_token }}',
+			dataType: 'json',
+			beforeSend: function () {
+				$(node).button('loading');
+			},
+			complete: function () {
+				$(node).button('reset');
+			},
+			success: function (json) {
+				$('.alert-dismissible').remove();
+
+				if (json['error']) {
+					$('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+				}
+
+				if (json['success']) {
+					$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+
+					$('#queue-content').load('index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}queue&store_id={{ store_id }}&user_token={{ user_token }}');
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+
 	$('#log-content').load('index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}log&store_id={{ store_id }}&user_token={{ user_token }}');
 
 	$('#log-content').delegate('.pagination a', 'click', function (e) {
