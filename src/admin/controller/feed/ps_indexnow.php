@@ -269,6 +269,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     {
         $this->load->language('extension/ps_indexnow/feed/ps_indexnow');
 
+        if (isset($this->request->get['store_id'])) {
+            $store_id = (int) $this->request->get['store_id'];
+        } else {
+            $store_id = 0;
+        }
+
         $json = [];
 
         if (!$this->user->hasPermission('modify', 'extension/ps_indexnow/feed/ps_indexnow')) {
@@ -290,15 +296,20 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
                     $server = HTTP_CATALOG;
 
-                    if (isset($this->request->get['store_id']) && (int) $this->request->get['store_id'] > 0) {
+                    if (isset($this->request->get['store_id']) && $store_id > 0) {
                         $this->load->model('setting/store');
 
-                        $store = $this->model_setting_store->getStore((int) $this->request->get['store_id']);
+                        $store = $this->model_setting_store->getStore($store_id);
 
                         if ($store) {
                             $server = $store['url'];
                         }
                     }
+
+                    $this->load->model('setting/setting');
+
+                    $this->model_setting_setting->editValue('feed_ps_indexnow', 'feed_ps_indexnow_service_key', $service_key, $store_id);
+                    $this->model_setting_setting->editValue('feed_ps_indexnow', 'feed_ps_indexnow_service_key_location', $service_key . '.txt', $store_id);
 
                     $json['service_key'] = $service_key;
                     $json['service_key_location'] = $service_key . '.txt';
