@@ -115,7 +115,7 @@
 							<div class="row mb-3">
 								<label for="input-url-list" class="col-sm-2 col-form-label">{{ entry_url_list }}</label>
 								<div class="col-sm-10">
-									<textarea wrap="off" rows="15" id="input-url-list" class="form-control" readonly></textarea>
+									<textarea wrap="off" rows="15" id="input-url-list" class="form-control"></textarea>
 									<div class="form-text">{{ help_url_list }}</div>
 								</div>
 							</div>
@@ -315,6 +315,48 @@
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 			}
 		});
+	});
+
+	$('#button-submit-url-list').on('click', function () {
+		var node = $(this);
+		var urlListObj = $('#input-url-list');
+
+		$.ajax({
+			url: 'index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}submit_queue&store_id={{ store_id }}&user_token={{ user_token }}',
+			type: 'post',
+			data: 'url_list=' + encodeURIComponent(urlListObj.val()),
+			dataType: 'json',
+			beforeSend: function () {
+				$(node).button('loading');
+			},
+			complete: function () {
+				$(node).button('reset');
+			},
+			success: function (json) {
+				$('.alert-dismissible').remove();
+
+				if (json['error']) {
+					$('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+				}
+
+				if (json['success']) {
+					$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+				}
+
+				$('#queue-content').load('index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}queue&store_id={{ store_id }}&user_token={{ user_token }}');
+
+				$('#log-content').load('index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}log&store_id={{ store_id }}&user_token={{ user_token }}');
+
+				urlListObj.val('');
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+
+	$('#button-clear-url-list').on('click', function () {
+		$('#input-url-list').val('');
 	});
 
 	$('#button-submit-queue').on('click', function () {
