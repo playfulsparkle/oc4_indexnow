@@ -32,6 +32,11 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     {
         $this->load->language('extension/ps_indexnow/feed/ps_indexnow');
 
+        $this->load->model('setting/setting');
+        $this->load->model('setting/store');
+        $this->load->model('localisation/language');
+        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+
 
         if (isset($this->request->get['store_id'])) {
             $store_id = (int) $this->request->get['store_id'];
@@ -69,7 +74,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $data['oc4_separator'] = $separator;
 
-        $this->load->model('setting/setting');
 
         $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
 
@@ -81,10 +85,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         if ($data['feed_ps_indexnow_service_key_location']) {
             $server = HTTP_CATALOG;
 
-            if (isset($this->request->get['store_id']) && (int) $this->request->get['store_id'] > 0) {
-                $this->load->model('setting/store');
-
-                $store = $this->model_setting_store->getStore((int) $this->request->get['store_id']);
+            if ($store_id > 0) {
+                $store = $this->model_setting_store->getStore($store_id);
 
                 if ($store) {
                     $server = $store['url'];
@@ -98,9 +100,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $data['feed_ps_indexnow_content_category'] = isset($config['feed_ps_indexnow_content_category']) ? (array) $config['feed_ps_indexnow_content_category'] : [];
 
-
-        $this->load->model('localisation/language');
-
         $data['languages'] = $this->model_localisation_language->getLanguages();
 
         $data['store_id'] = $store_id;
@@ -113,8 +112,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             'href' => $this->url->link('extension/ps_indexnow/feed/ps_indexnow', 'user_token=' . $this->session->data['user_token'] . '&store_id=0'),
         ];
 
-        $this->load->model('setting/store');
-
         $stores = $this->model_setting_store->getStores();
 
         foreach ($stores as $store) {
@@ -124,8 +121,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 'href' => $this->url->link('extension/ps_indexnow/feed/ps_indexnow', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store['store_id']),
             ];
         }
-
-        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
 
         $data['indexnow_services'] = $this->model_extension_ps_indexnow_feed_ps_indexnow->getIndexNowServiceList();
 
