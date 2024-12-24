@@ -616,7 +616,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             unset($post_data['category_store']);
 
-            $content_hash = 'ae' . md5(json_encode($post_data));
+            $content_hash = md5(json_encode($post_data));
 
             if (isset($json['category_id'])) {
                 $this->addToQueueItemData('index.php?route=product/category&language=%s&path=' . (int) $json['category_id'], $category_store, $content_hash, $languages);
@@ -642,7 +642,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = 'd' . md5(json_encode($this->request->post));
+        $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $category_id) {
             $this->addToQueueItemData('index.php?route=product/category&language=%s&path=' . (int) $category_id, $item_stores, $content_hash, $languages);
@@ -675,7 +675,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             unset($post_data['product_store']);
 
-            $content_hash = 'ae' . md5(json_encode($post_data));
+            $content_hash = md5(json_encode($post_data));
 
             if (isset($json['product_id'])) {
                 $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=' . (int) $json['product_id'], $product_store, $content_hash, $languages);
@@ -701,7 +701,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = 'd' . md5(json_encode($this->request->post));
+        $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $product_id) {
             $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=' . (int) $product_id, $item_stores, $content_hash, $languages);
@@ -734,7 +734,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             unset($post_data['manufacturer_store']);
 
-            $content_hash = 'ae' . md5(json_encode($post_data));
+            $content_hash = md5(json_encode($post_data));
 
             if (isset($json['manufacturer_id'])) {
                 $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=' . (int) $json['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
@@ -760,7 +760,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = 'd' . md5(json_encode($this->request->post));
+        $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $manufacturer_id) {
             $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=' . (int) $manufacturer_id, $item_stores, $content_hash, $languages);
@@ -793,7 +793,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             unset($post_data['information_store']);
 
-            $content_hash = 'ae' . md5(json_encode($post_data));
+            $content_hash = md5(json_encode($post_data));
 
             if (isset($json['information_id'])) {
                 $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=' . (int) $json['information_id'], $information_store, $content_hash, $languages);
@@ -819,7 +819,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = 'd' . md5(json_encode($this->request->post));
+        $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $information_id) {
             $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=' . (int) $information_id, $item_stores, $content_hash, $languages);
@@ -852,7 +852,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             unset($post_data['topic_store']);
 
-            $content_hash = 'ae' . md5(json_encode($post_data));
+            $content_hash = md5(json_encode($post_data));
 
             if (isset($json['topic_id'])) {
                 $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=' . (int) $json['topic_id'], $topic_store, $content_hash, $languages);
@@ -878,7 +878,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = 'd' . md5(json_encode($this->request->post));
+        $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $topic_id) {
             $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=' . (int) $topic_id, $item_stores, $content_hash, $languages);
@@ -911,7 +911,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             unset($post_data['article_store']);
 
-            $content_hash = 'ae' . md5(json_encode($post_data));
+            $content_hash = md5(json_encode($post_data));
 
             if (isset($json['article_id'])) {
                 $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=' . (int) $json['article_id'] . '&topic_id=%s', $article_store, $content_hash, $languages);
@@ -938,7 +938,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $item_stores = $this->model_setting_store->getStores();
         $languages = $this->model_localisation_language->getLanguages();
-        $content_hash = 'd' . md5(json_encode($this->request->post));
+        $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $article_id) {
             $article_info = $this->model_cms_article->getArticle($article_id);
