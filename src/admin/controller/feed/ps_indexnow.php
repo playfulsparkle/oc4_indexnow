@@ -399,6 +399,45 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->response->setOutput($this->load->view('extension/ps_indexnow/feed/ps_indexnow_queue', $data));
     }
 
+    public function submit_queue(): void
+    {
+        $this->load->language('extension/ps_indexnow/feed/ps_indexnow');
+
+        $json = [];
+
+        if (!$this->user->hasPermission('modify', 'extension/ps_indexnow/feed/ps_indexnow')) {
+            $json['error'] = $this->language->get('error_permission');
+        }
+
+        if (!$json) {
+            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+
+            if (isset($this->request->post['store_id'])) {
+                $store_id = (int) $this->request->post['store_id'];
+            } else {
+                $store_id = 0;
+            }
+
+            if (isset($this->request->post['queue_id'])) {
+                $queue_id = (int) $this->request->post['queue_id'];
+            } else {
+                $queue_id = 0;
+            }
+
+            $filter_data = [
+                'store_id' => $store_id,
+                'queue_id' => $queue_id,
+                'order' => 'ASC',
+            ];
+
+            $url_list = $this->model_extension_ps_indexnow_feed_ps_indexnow->getQueue($filter_data);
+            var_export($url_list);
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
     public function clear_queue(): void
     {
         $this->load->language('extension/ps_indexnow/feed/ps_indexnow');

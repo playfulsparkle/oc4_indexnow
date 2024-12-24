@@ -85,7 +85,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
     {
         $this->db->query("
             INSERT IGNORE INTO `" . DB_PREFIX . "ps_indexnow_queue` (`url`, `content_hash`, `store_id`, `language_id`, `date_added`)
-            VALUES ('" . $this->db->escape($data['url']) . "', '" . $this->db->escape($data['content_hash']) . "', '" . (int)$data['store_id'] . "', '" . (int)$data['language_id'] . "', NOW())
+            VALUES ('" . $this->db->escape($data['url']) . "', '" . $this->db->escape($data['content_hash']) . "', '" . (int) $data['store_id'] . "', '" . (int) $data['language_id'] . "', NOW())
         ");
     }
 
@@ -110,8 +110,29 @@ class PsIndexNow extends \Opencart\System\Engine\Model
             `url`,
             `date_added`
         FROM `" . DB_PREFIX . "ps_indexnow_queue`
-        WHERE `store_id` = '" . (int) $data['store_id'] . "'
-        ORDER BY `date_added` DESC";
+        WHERE `store_id` = '" . (int) $data['store_id'] . "'";
+
+        if (isset($data['queue_id']) && $data['queue_id'] > 0) {
+            $sql .= " AND `queue_id` = '" . (int) $data['queue_id'] . "'";
+        }
+
+        $sort_data = [
+            'queue_id',
+            'url',
+            'date_added'
+        ];
+
+        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+            $sql .= " ORDER BY " . $data['sort'];
+        } else {
+            $sql .= " ORDER BY `date_added`";
+        }
+
+        if (isset($data['order']) && ($data['order'] == 'DESC' || $data['order'] == 'ASC')) {
+            $sql .= " " . $data['order'];
+        } else {
+            $sql .= " DESC";
+        }
 
         if (isset($data['start']) || isset($data['limit'])) {
             if ($data['start'] < 0) {
@@ -126,13 +147,6 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         }
 
         $query = $this->db->query($sql);
-
-        return $query->rows;
-    }
-
-    public function getQueuedUrls(int $limit = 100)
-    {
-        $query = $this->db->query("SELECT `queue_id`, `url`, `store_id` FROM `" . DB_PREFIX . "ps_indexnow_queue` ORDER BY `date_added` ASC LIMIT " . (int) $limit);
 
         return $query->rows;
     }
