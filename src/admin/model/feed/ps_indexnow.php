@@ -74,6 +74,17 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->rows;
     }
 
+    public function getServiceEndpoints(array $services): array
+    {
+        $services = array_keys(array_filter($services, function ($value): bool {
+            return $value > 0;
+        }));
+
+        $query = $this->db->query("SELECT `service_id`, `endpoint_url` FROM `" . DB_PREFIX . "ps_indexnow_services` WHERE `service_id` IN (" . implode(',', $services) . ")");
+
+        return $query->rows;
+    }
+
     public function getSeoUrlByKeyValue(string $key, string $value, int $store_id, int $language_id): array
     {
         $query = $this->db->query("SELECT DISTINCT * FROM `" . DB_PREFIX . "seo_url` WHERE `key` = '" . $this->db->escape($key) . "' AND `value` = '" . $this->db->escape($value) . "' AND `store_id` = '" . (int) $store_id . "' AND `language_id` = '" . (int) $language_id . "'");
@@ -89,9 +100,9 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         ");
     }
 
-    public function removeQueue(int $queue_id)
+    public function removeQueueItems(array $queue_id_list): int
     {
-        $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `queue_id` = '" . (int) $queue_id . "'");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `queue_id` IN (" . implode(',', $queue_id_list) . ")");
 
         return $this->db->countAffected();
     }
