@@ -383,7 +383,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             ];
         }
 
-        $queue_total = $this->model_extension_ps_indexnow_feed_ps_indexnow->getTotalQueue();
+        $queue_total = $this->model_extension_ps_indexnow_feed_ps_indexnow->getTotalQueue($store_id);
 
         $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
 
@@ -439,7 +439,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             ];
         }
 
-        $log_total = $this->model_extension_ps_indexnow_feed_ps_indexnow->getTotalLog();
+        $log_total = $this->model_extension_ps_indexnow_feed_ps_indexnow->getTotalLog($store_id);
 
         $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
 

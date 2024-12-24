@@ -137,9 +137,9 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->rows;
     }
 
-    public function getTotalQueue(): int
+    public function getTotalQueue(int $store_id)
     {
-        $query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "ps_indexnow_queue`");
+        $query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `store_id` = '" . (int) $store_id . "'");
 
         return $query->row['total'];
     }
@@ -174,9 +174,9 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->rows;
     }
 
-    public function getTotalLog(): int
+    public function getTotalLog(int $store_id): int
     {
-        $query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "ps_indexnow_logs`");
+        $query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "ps_indexnow_logs` WHERE `store_id` = '" . (int) $store_id . "'");
 
         return $query->row['total'];
     }
@@ -189,9 +189,9 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         ");
     }
 
-    public function clearLog(): int
+    public function clearLog(int $store_id): int
     {
-        $this->db->query("TRUNCATE TABLE `" . DB_PREFIX . "ps_indexnow_logs`");
+        $this->db->query("TRUNCATE TABLE `" . DB_PREFIX . "ps_indexnow_logs` WHERE `store_id` = '" . (int) $store_id . "'");
 
         return $this->db->countAffected();
     }
