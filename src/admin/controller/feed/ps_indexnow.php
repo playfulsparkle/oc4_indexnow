@@ -465,6 +465,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $service_key = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
             $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
+            $all_success = true;
+
             foreach ($services as $service) {
                 $url_list_results = $this->submitUrls(
                     $service['endpoint_url'] . 'no',
@@ -483,15 +485,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                     ];
 
                     $this->model_extension_ps_indexnow_feed_ps_indexnow->addLog($log_data);
-                }
-            }
 
-            $all_success = true;
-
-            foreach ($url_list_results as $url_list_result) {
-                if ($url_list_result['status_code'] !== 200) {
-                    $all_success = false;
-                    break;
+                    if ($all_success && $url_list_result['status_code'] !== 200) {
+                        $all_success = false;
+                    }
                 }
             }
 
