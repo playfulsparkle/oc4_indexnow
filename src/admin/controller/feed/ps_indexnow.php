@@ -202,8 +202,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             foreach ($stores as $store_id) {
                 $service_key = $this->save_service_key();
 
-                $this->model_setting_setting->editValue('feed_ps_indexnow', 'feed_ps_indexnow_service_key', $service_key, $store_id);
-                $this->model_setting_setting->editValue('feed_ps_indexnow', 'feed_ps_indexnow_service_key_location', $service_key . '.txt', $store_id);
+                $data = [
+                    'feed_ps_indexnow_service_key' => $service_key,
+                    'feed_ps_indexnow_service_key_location' => $service_key . '.txt',
+                ];
+
+                $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
             }
 
             $this->load->model('setting/event');
