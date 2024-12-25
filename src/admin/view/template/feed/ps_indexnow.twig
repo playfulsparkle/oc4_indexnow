@@ -112,6 +112,8 @@
 						</div>
             <div class="tab-pane" id="tab-manual-submit">
 
+							<div class="alert alert-warning"><i class="fa-solid fa-circle-exclamation"></i> {{ text_url_list_warning }}</div>
+
 							<div class="row mb-3">
 								<label for="input-url-list" class="col-sm-2 col-form-label">{{ entry_url_list }}</label>
 								<div class="col-sm-10">
@@ -125,10 +127,10 @@
 								<div class="col-sm-10">
 									<div class="input-group">
 										<div class="input-group-text"><i class="fa-solid fa-globe"></i></div>
-										<input type="text" value="" placeholder="{{ entry_load_sitemap }}" id="input-load-sitemap" class="form-control" readonly>
+										<input type="text" value="" placeholder="{{ entry_load_sitemap }}" id="input-load-sitemap" class="form-control">
 										<span class="input-group-btn">
-											<button type="button" class="btn btn-secondary" id="button-import-sitemap" data-bs-toggle="tooltip" title="{{ button_import_sitemap }}"><i class="fa-solid fa-paper-plane"></i></button>
-											<button type="button" class="btn btn-secondary" id="button-upload-sitemap" data-bs-toggle="tooltip" title="{{ button_upload_sitemap }}"><i class="fa-solid fa-upload"></i></button>
+											<button type="button" class="btn btn-success" id="button-import-sitemap" data-bs-toggle="tooltip" title="{{ button_import_sitemap }}"><i class="fa-solid fa-paper-plane"></i> {{ button_import_sitemap }}</button>
+											<button type="button" class="btn btn-primary" id="button-upload-sitemap" data-bs-toggle="tooltip" title="{{ button_upload_sitemap }}"><i class="fa-solid fa-upload"></i> {{ button_upload_sitemap }}</button>
 										</span>
 									</div>
 								</div>
@@ -210,6 +212,7 @@
 	$('#button-import-sitemap').on('click', function () {
 		var node = $(this);
 		var sitemapInput = $('#input-load-sitemap');
+		var urlListObj = $('#input-url-list');
 
 		$.ajax({
 			url: 'index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}load_sitemap&store_id={{ store_id }}&user_token={{ user_token }}',
@@ -235,6 +238,10 @@
 				}
 
 				sitemapInput.val('');
+
+				if (json['url_list']) {
+					urlListObj.val(json['url_list']);
+				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
 				console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
@@ -244,6 +251,7 @@
 
 	$('#button-upload-sitemap').on('click', function () {
 		var node = $(this);
+		var urlListObj = $('#input-url-list');
 
 		$('#form-upload').remove();
 
@@ -282,6 +290,10 @@
 
 						if (json['success']) {
 							$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-check-circle"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+						}
+
+						if (json['url_list']) {
+							urlListObj.val(json['url_list']);
 						}
 					},
 					error: function (xhr, ajaxOptions, thrownError) {
