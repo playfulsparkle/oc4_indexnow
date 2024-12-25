@@ -423,7 +423,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 });
 
                 if (!$url_list) {
-                    $json['error'] = $this->language->get('error_empty_url_list');
+                    $json['success'] = $this->language->get('text_success_submit_url_list');
                 }
             } else {
                 $task_type = 'queue';
@@ -447,7 +447,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 }
 
                 if (!$url_list) {
-                    $json['error'] = $this->language->get('error_empty_queue');
+                    $json['success'] = $this->language->get('text_success_submit_queue');
                 }
             }
         }
