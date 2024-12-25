@@ -479,8 +479,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                         $batch
                     );
 
+                    $log_data = [];
+
                     foreach ($url_list_results as $url_list_result) {
-                        $log_data = [
+                        $log_data[] = [
                             'service_id' => $service['service_id'],
                             'url' => $url_list_result['url'],
                             'status_code' => $url_list_result['status_code'],
@@ -490,9 +492,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                         if ($all_success && $url_list_result['status_code'] !== 200) {
                             $all_success = false;
                         }
-
-                        $this->model_extension_ps_indexnow_feed_ps_indexnow->addLog($log_data);
                     }
+
+                    $this->model_extension_ps_indexnow_feed_ps_indexnow->addLog($log_data);
+
+                    // Add a delay between batches to avoid overwhelming the service
+                    sleep(2); // Delay for 2 second
                 }
             }
 

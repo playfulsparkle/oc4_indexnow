@@ -206,12 +206,25 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->row['total'];
     }
 
-    public function addLog(array $data): void
+    public function addLog(array $log_data): void
     {
-        $this->db->query(
-            "INSERT INTO `" . DB_PREFIX . "ps_indexnow_logs` (`service_id`, `url`, `status_code`, `store_id`, `date_added`)
-            VALUES ('" . (int) $data['service_id'] . "', '" . $this->db->escape($data['url']) . "', '" . (int) $data['status_code'] . "', '" . (int) $data['store_id'] . "', NOW())"
-        );
+        if (empty($log_data)) {
+            return;
+        }
+
+        $values = [];
+
+        foreach ($log_data as $data) {
+            $values[] = "(
+                '" . (int) $data['service_id'] . "',
+                '" . $this->db->escape($data['url']) . "',
+                '" . (int) $data['status_code'] . "',
+                '" . (int) $data['store_id'] . "',
+                NOW()
+            )";
+        }
+
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "ps_indexnow_logs` (`service_id`, `url`, `status_code`, `store_id`, `date_added`) VALUES " . implode(", ", $values));
     }
 
     public function clearLog(int $store_id): int
