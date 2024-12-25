@@ -130,6 +130,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         $sort_data = [
             'queue_id',
             'url',
+            'store_id',
             'date_added'
         ];
 

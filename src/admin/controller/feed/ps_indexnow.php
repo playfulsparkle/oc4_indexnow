@@ -804,7 +804,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         return false;
     }
 
-
     private function get_store_url($store_id)
     {
         $server = HTTP_CATALOG;

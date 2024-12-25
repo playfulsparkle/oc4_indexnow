@@ -5,11 +5,12 @@ class PsIndexNow extends \Opencart\System\Engine\Model
 {
     public function getQueue(array $data = []): array
     {
-        $sql = "SELECT `queue_id`, `url`, `date_added` FROM `" . DB_PREFIX . "ps_indexnow_queue`";
+        $sql = "SELECT `queue_id`, `url`, `date_added` FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `store_id` = '" . (int) $data['store_id'] . "'";
 
         $sort_data = [
             'queue_id',
             'url',
+            'store_id',
             'date_added'
         ];
 
@@ -40,5 +41,44 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         $query = $this->db->query($sql);
 
         return $query->rows;
+    }
+
+    public function removeQueueItems(array $queue_id_list): int
+    {
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `queue_id` IN (" . implode(',', $queue_id_list) . ")");
+
+        return $this->db->countAffected();
+    }
+
+    public function getServiceEndpoints(array $services): array
+    {
+        $services = array_keys(array_filter($services, function ($value): bool {
+            return $value > 0;
+        }));
+
+        $query = $this->db->query("SELECT `service_id`, `endpoint_url` FROM `" . DB_PREFIX . "ps_indexnow_services` WHERE `service_id` IN (" . implode(',', $services) . ")");
+
+        return $query->rows;
+    }
+
+    public function addLog(array $log_data): void
+    {
+        if (empty($log_data)) {
+            return;
+        }
+
+        $values = [];
+
+        foreach ($log_data as $data) {
+            $values[] = "(
+                '" . (int) $data['service_id'] . "',
+                '" . $this->db->escape($data['url']) . "',
+                '" . (int) $data['status_code'] . "',
+                '" . (int) $data['store_id'] . "',
+                NOW()
+            )";
+        }
+
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "ps_indexnow_logs` (`service_id`, `url`, `status_code`, `store_id`, `date_added`) VALUES " . implode(", ", $values));
     }
 }
