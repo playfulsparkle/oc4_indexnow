@@ -1,5 +1,5 @@
 <?php
-namespace Opencart\Catalog\Controller\Extension\PsIndexNow\Ctron;
+namespace Opencart\Catalog\Controller\Extension\PsIndexNow\Cron;
 
 class PsIndexNow extends \Opencart\System\Engine\Controller
 {
