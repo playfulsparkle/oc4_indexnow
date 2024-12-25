@@ -284,7 +284,7 @@
 		var element = this;
 
 		$.ajax({
-			url: 'index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}submit_queue&user_token={{ user_token }}',
+			url: 'index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}submit_queue&store_id={{ store_id }}&user_token={{ user_token }}',
 			type: 'post',
 			data: 'queue_id=' + encodeURIComponent(this.value),
 			dataType: 'json',
