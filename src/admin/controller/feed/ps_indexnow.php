@@ -541,12 +541,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $server = $this->get_store_url($store_id);
         $server_host = parse_url($server, PHP_URL_HOST);
 
-        $task_type = 'url_list';
-
         if (!$json) {
             if (isset($this->request->post['url_list'])) {
-                $task_type = 'url_list';
-
                 $url_list = array_map('trim', explode("\n", (string) $this->request->post['url_list']));
 
                 $url_list = array_filter($url_list, function ($url) use ($server_host) {
@@ -559,12 +555,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                     return $url_host && strtolower($url_host) === strtolower($server_host);
                 });
 
+                $queue_id_list = [];
+
                 if (!$url_list) {
                     $json['error'] = $this->language->get('error_submit_url_list');
                 }
             } else {
-                $task_type = 'queue';
-
                 $filter_data = [
                     'store_id' => $store_id,
                     'queue_id' => $queue_id,
@@ -574,13 +570,11 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 $result = $this->model_extension_ps_indexnow_feed_ps_indexnow->getQueue($filter_data);
 
                 if ($result) {
-                    if ($queue_id_list = array_column($result, 'queue_id')) {
-                        $this->model_extension_ps_indexnow_feed_ps_indexnow->removeQueueItems($queue_id_list);
-                    }
-
                     $url_list = array_column($result, 'url');
+                    $queue_id_list = array_column($result, 'queue_id');
                 } else {
                     $url_list = [];
+                    $queue_id_list = [];
                 }
 
                 if (!$url_list) {
@@ -588,7 +582,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 }
             }
         }
-
 
         if (!$json) {
             $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
@@ -602,6 +595,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $service_key = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
             $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
+            if (!$services) {
+                $json['error'] = $this->language->get('error_no_services_enabled');
+            }
+        }
+
+        if (!$json) {
             $all_success = true;
 
             foreach ($services as $service) {
@@ -638,10 +637,14 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 }
             }
 
+            if ($services && $queue_id_list) {
+                $this->model_extension_ps_indexnow_feed_ps_indexnow->removeQueueItems($queue_id_list);
+            }
+
             if ($all_success) {
-                $json['success'] = ($task_type === 'url_list') ? $this->language->get('text_success_submit_url_list') : $this->language->get('text_success_submit_queue');
+                $json['success'] = !$queue_id_list ? $this->language->get('text_success_submit_url_list') : $this->language->get('text_success_submit_queue');
             } else {
-                $json['error'] = ($task_type === 'url_list') ? $this->language->get('error_submit_url_list') : $this->language->get('error_submit_queue');
+                $json['error'] = !$queue_id_list ? $this->language->get('error_submit_url_list') : $this->language->get('error_submit_queue');
             }
         }
 
