@@ -395,22 +395,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $store_id = 0;
         }
 
-
-        if (!$json) {
-            $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
-
-            if (isset($config['feed_ps_indexnow_service_status'])) {
-                $services = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints((array) $config['feed_ps_indexnow_service_status']);
-            } else {
-                $services = [];
-            }
-
-            $service_key = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
-            $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
-
-            if (!$services || empty($service_key) || empty($service_key_location)) {
-                $json['error'] = $this->language->get('error_not_configured');
-            }
+        if (isset($this->request->post['queue_id'])) {
+            $queue_id = (int) $this->request->post['queue_id'];
+        } else {
+            $queue_id = 0;
         }
 
 
@@ -418,12 +406,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             if (isset($this->request->post['url_list'])) {
                 $url_list = array_filter(explode("\n", (string) $this->request->post['url_list']));
             } else {
-                if (isset($this->request->post['queue_id'])) {
-                    $queue_id = (int) $this->request->post['queue_id'];
-                } else {
-                    $queue_id = 0;
-                }
-
                 $filter_data = [
                     'store_id' => $store_id,
                     'queue_id' => $queue_id,
@@ -450,6 +432,17 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
 
         if (!$json) {
+            $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
+
+            if (isset($config['feed_ps_indexnow_service_status'])) {
+                $services = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints((array) $config['feed_ps_indexnow_service_status']);
+            } else {
+                $services = [];
+            }
+
+            $service_key = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
+            $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
+
             $server = $this->get_store_url($store_id);
 
             foreach ($services as $service) {
