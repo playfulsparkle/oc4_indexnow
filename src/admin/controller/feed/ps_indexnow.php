@@ -122,7 +122,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $data['indexnow_services'] = $this->model_extension_ps_indexnow_feed_ps_indexnow->getIndexNowServiceList();
 
-        $data['content_categories'] = [
+        $content_categories = [
             'category' => $this->language->get('text_categories'),
             'product' => $this->language->get('text_products'),
             'manufacturer' => $this->language->get('text_manufacturers'),
@@ -130,11 +130,13 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         ];
 
         if (version_compare(VERSION, '4.1.0.0', '>=')) {
-            $data['content_categories'] += [
+            $content_categories = array_merge($content_categories, [
                 'topic' => $this->language->get('text_topics'),
                 'article' => $this->language->get('text_articles'),
-            ];
+            ]);
         }
+
+        $data['content_categories'] = $content_categories;
 
         $data['text_contact'] = sprintf($this->language->get('text_contact'), self::EXTENSION_EMAIL, self::EXTENSION_EMAIL, self::EXTENSION_DOC);
 
@@ -1024,13 +1026,13 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         ];
 
         if (version_compare(VERSION, '4.1.0.0', '>=')) {
-            $events += [
+            $events = array_merge($events, [
                 ['trigger' => 'admin/controller/cms/topic' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCmsTopicSaveAfter'],
                 ['trigger' => 'admin/controller/cms/topic' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCmsTopicDeleteBefore'],
 
                 ['trigger' => 'admin/controller/cms/article' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCmsArticleSaveAfter'],
                 ['trigger' => 'admin/controller/cms/article' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCmsArticleDeleteBefore'],
-            ];
+            ]);
         }
 
         $result = 0;
@@ -1343,6 +1345,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('localisation/language');
             $this->load->model('setting/store');
             $this->load->model('setting/setting');
+            $this->load->model('cms/article');
 
             $languages = $this->model_localisation_language->getLanguages();
 
@@ -1354,9 +1357,13 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $content_hash = md5(json_encode($post_data));
 
             if (isset($json['article_id'])) {
-                $this->addToQueueItemData('article', 'index.php?route=cms/blog.info&language=%s&article_id=' . (int) $json['article_id'] . '&topic_id=%s', $article_store, $content_hash, $languages);
+                $article_info = $this->model_cms_article->getArticle((int) $json['article_id']);
+
+                $this->addToQueueItemData('article', 'index.php?route=cms/blog.info&language=%s&article_id=' . (int) $json['article_id'] . '&topic_id=' . $article_info['topic_id'], $article_store, $content_hash, $languages);
             } else if (isset($this->request->post['article_id'])) {
-                $this->addToQueueItemData('article', 'index.php?route=cms/blog.info&language=%s&article_id=' . (int) $this->request->post['article_id'] . '&topic_id=%s', $article_store, $content_hash, $languages);
+                $article_info = $this->model_cms_article->getArticle((int) $this->request->post['article_id']);
+
+                $this->addToQueueItemData('article', 'index.php?route=cms/blog.info&language=%s&article_id=' . (int) $this->request->post['article_id'] . '&topic_id=' . $article_info['topic_id'], $article_store, $content_hash, $languages);
             }
         }
     }
@@ -1414,7 +1421,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 continue;
             }
 
-            if (!in_array($item_category, (array) $config['feed_ps_indexnow_content_category'])) {
+            if (isset($config['feed_ps_indexnow_content_category']) && !in_array($item_category, (array) $config['feed_ps_indexnow_content_category'])) {
                 continue;
             }
 
