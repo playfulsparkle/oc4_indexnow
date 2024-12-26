@@ -397,6 +397,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             return $json;
         }
 
+        $url_list = [];
+
         if (function_exists('curl_init')) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $file_url);
@@ -407,8 +409,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+
             $response = curl_exec($ch);
+            $error = curl_errno($ch);
+            $http_status_code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
             curl_close($ch);
+
+            if ($response !== false && !$error && in_array((int) $http_status_code, [200, 304])) {
+                $url_list = $this->process_xml_sitemap($response);
+            }
         } else if (ini_get('allow_url_fopen')) {
             $context = stream_context_create([
                 'http' => [
@@ -419,10 +429,24 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 ]
             ]);
             $response = @file_get_contents($file_url, false, $context);
+
+            if ($response !== false) {
+                $metadata = stream_get_meta_data($context);
+
+                if (
+                    isset($metadata['wrapper_data']) &&
+                    preg_match('#HTTP/\d\.\d (\d+)#', $metadata['wrapper_data'][0], $matches) &&
+                    in_array((int) $matches[1], [200, 304])
+                ) {
+                    $url_list = $this->process_xml_sitemap($response);
+                }
+            }
         }
 
-        if ($response !== false) {
-            $json['url_list'] = $this->process_xml_sitemap($response);
+        if ($url_list) {
+            $json['url_list'] = $url_list;
+        } else {
+            $json['error'] = sprintf($this->language->get('error_download'), htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'));
         }
 
         return $json;
@@ -430,7 +454,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
     private function process_xml_sitemap(string $xmlString): string
     {
-        $urls = [];
+        if (empty($xmlString)) {
+            return '';
+        }
 
         libxml_use_internal_errors(true);
 
@@ -439,8 +465,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         if (!$reader->xml($xmlString)) {
             libxml_clear_errors();
 
-            return $urls;
+            return '';
         }
+
+        $urls = [];
 
         while ($reader->read()) {
             if ($reader->nodeType === \XMLReader::ELEMENT && $reader->localName === 'url') {
@@ -636,7 +664,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
                 foreach ($batches as $batch) {
                     $status_code = $this->submitUrls(
-                        $service['endpoint_url'] . 'no',
+                        $service['endpoint_url'],
                         $server_host,
                         $service_key,
                         $server . $service_key_location,
