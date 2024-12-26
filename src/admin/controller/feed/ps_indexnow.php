@@ -1067,10 +1067,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             return;
         }
 
-        if (!in_array('category', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
-            return;
-        }
-
         $json = json_decode($this->response->getOutput(), true);
 
         if (isset($json['success'])) {
@@ -1089,9 +1085,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $content_hash = md5(json_encode($post_data));
 
             if (isset($json['category_id'])) {
-                $this->addToQueueItemData('index.php?route=product/category&language=%s&path=' . (int) $json['category_id'], $category_store, $content_hash, $languages);
+                $this->addToQueueItemData('category', 'index.php?route=product/category&language=%s&path=' . (int) $json['category_id'], $category_store, $content_hash, $languages);
             } else if (isset($this->request->post['category_id'])) {
-                $this->addToQueueItemData('index.php?route=product/category&language=%s&path=' . (int) $this->request->post['category_id'], $category_store, $content_hash, $languages);
+                $this->addToQueueItemData('category', 'index.php?route=product/category&language=%s&path=' . (int) $this->request->post['category_id'], $category_store, $content_hash, $languages);
             }
         }
     }
@@ -1099,10 +1095,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCatalogCategoryDeleteBefore(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('category', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1116,7 +1108,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $category_id) {
-            $this->addToQueueItemData('index.php?route=product/category&language=%s&path=' . (int) $category_id, $item_stores, $content_hash, $languages);
+            $this->addToQueueItemData('category', 'index.php?route=product/category&language=%s&path=' . (int) $category_id, $item_stores, $content_hash, $languages);
         }
     }
     #endregion
@@ -1125,10 +1117,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCatalogProductSaveAfter(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('product', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1150,9 +1138,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $content_hash = md5(json_encode($post_data));
 
             if (isset($json['product_id'])) {
-                $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=' . (int) $json['product_id'], $product_store, $content_hash, $languages);
+                $this->addToQueueItemData('product', 'index.php?route=product/product&language=%s&product_id=' . (int) $json['product_id'], $product_store, $content_hash, $languages);
             } else if (isset($this->request->post['product_id'])) {
-                $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=' . (int) $this->request->post['product_id'], $product_store, $content_hash, $languages);
+                $this->addToQueueItemData('product', 'index.php?route=product/product&language=%s&product_id=' . (int) $this->request->post['product_id'], $product_store, $content_hash, $languages);
             }
         }
     }
@@ -1160,10 +1148,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCatalogProductDeleteBefore(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('product', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1177,7 +1161,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $product_id) {
-            $this->addToQueueItemData('index.php?route=product/product&language=%s&product_id=' . (int) $product_id, $item_stores, $content_hash, $languages);
+            $this->addToQueueItemData('product', 'index.php?route=product/product&language=%s&product_id=' . (int) $product_id, $item_stores, $content_hash, $languages);
         }
     }
     #endregion
@@ -1186,10 +1170,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCatalogManufacturerSaveAfter(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('manufacturer', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1213,9 +1193,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
 
             if (isset($json['manufacturer_id'])) {
-                $this->addToQueueItemData('index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $json['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
+                $this->addToQueueItemData('manufacturer', 'index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $json['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
             } else if (isset($this->request->post['manufacturer_id'])) {
-                $this->addToQueueItemData('index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $this->request->post['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
+                $this->addToQueueItemData('manufacturer', 'index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $this->request->post['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
             }
         }
     }
@@ -1223,10 +1203,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCatalogManufacturerDeleteBefore(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('manufacturer', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1242,7 +1218,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
 
         foreach ((array) $this->request->post['selected'] as $manufacturer_id) {
-            $this->addToQueueItemData('index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $manufacturer_id, $item_stores, $content_hash, $languages);
+            $this->addToQueueItemData('manufacturer', 'index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $manufacturer_id, $item_stores, $content_hash, $languages);
         }
     }
     #endregion
@@ -1251,10 +1227,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCatalogInformationSaveAfter(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('information', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1276,9 +1248,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $content_hash = md5(json_encode($post_data));
 
             if (isset($json['information_id'])) {
-                $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=' . (int) $json['information_id'], $information_store, $content_hash, $languages);
+                $this->addToQueueItemData('information', 'index.php?route=information/information&language=%s&information_id=' . (int) $json['information_id'], $information_store, $content_hash, $languages);
             } else if (isset($this->request->post['information_id'])) {
-                $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=' . (int) $this->request->post['information_id'], $information_store, $content_hash, $languages);
+                $this->addToQueueItemData('information', 'index.php?route=information/information&language=%s&information_id=' . (int) $this->request->post['information_id'], $information_store, $content_hash, $languages);
             }
         }
     }
@@ -1286,10 +1258,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCatalogInformationDeleteBefore(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('information', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1303,7 +1271,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $information_id) {
-            $this->addToQueueItemData('index.php?route=information/information&language=%s&information_id=' . (int) $information_id, $item_stores, $content_hash, $languages);
+            $this->addToQueueItemData('information', 'index.php?route=information/information&language=%s&information_id=' . (int) $information_id, $item_stores, $content_hash, $languages);
         }
     }
     #endregion
@@ -1312,10 +1280,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCmsTopicSaveAfter(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('topic', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1337,9 +1301,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $content_hash = md5(json_encode($post_data));
 
             if (isset($json['topic_id'])) {
-                $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=' . (int) $json['topic_id'], $topic_store, $content_hash, $languages);
+                $this->addToQueueItemData('topic', 'index.php?route=cms/blog&language=%s&topic_id=' . (int) $json['topic_id'], $topic_store, $content_hash, $languages);
             } else if (isset($this->request->post['topic_id'])) {
-                $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=' . (int) $this->request->post['topic_id'], $topic_store, $content_hash, $languages);
+                $this->addToQueueItemData('topic', 'index.php?route=cms/blog&language=%s&topic_id=' . (int) $this->request->post['topic_id'], $topic_store, $content_hash, $languages);
             }
         }
     }
@@ -1347,10 +1311,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCmsTopicDeleteBefore(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('topic', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1364,7 +1324,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $content_hash = md5(json_encode($this->request->post));
 
         foreach ((array) $this->request->post['selected'] as $topic_id) {
-            $this->addToQueueItemData('index.php?route=cms/blog&language=%s&topic_id=' . (int) $topic_id, $item_stores, $content_hash, $languages);
+            $this->addToQueueItemData('topic', 'index.php?route=cms/blog&language=%s&topic_id=' . (int) $topic_id, $item_stores, $content_hash, $languages);
         }
     }
     #endregion
@@ -1373,10 +1333,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCmsArticleSaveAfter(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('article', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1398,9 +1354,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $content_hash = md5(json_encode($post_data));
 
             if (isset($json['article_id'])) {
-                $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=' . (int) $json['article_id'] . '&topic_id=%s', $article_store, $content_hash, $languages);
+                $this->addToQueueItemData('article', 'index.php?route=cms/blog.info&language=%s&article_id=' . (int) $json['article_id'] . '&topic_id=%s', $article_store, $content_hash, $languages);
             } else if (isset($this->request->post['article_id'])) {
-                $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=' . (int) $this->request->post['article_id'] . '&topic_id=%s', $article_store, $content_hash, $languages);
+                $this->addToQueueItemData('article', 'index.php?route=cms/blog.info&language=%s&article_id=' . (int) $this->request->post['article_id'] . '&topic_id=%s', $article_store, $content_hash, $languages);
             }
         }
     }
@@ -1408,10 +1364,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     public function eventAdminControllerCmsArticleDeleteBefore(string &$route, array &$args): void
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
-            return;
-        }
-
-        if (!in_array('article', (array) $this->config->get('feed_ps_indexnow_content_category'))) {
             return;
         }
 
@@ -1428,12 +1380,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         foreach ((array) $this->request->post['selected'] as $article_id) {
             $article_info = $this->model_cms_article->getArticle($article_id);
 
-            $this->addToQueueItemData('index.php?route=cms/blog.info&language=%s&article_id=' . (int) $article_id . '&topic_id=' . $article_info['topic_id'], $item_stores, $content_hash, $languages);
+            $this->addToQueueItemData('article', 'index.php?route=cms/blog.info&language=%s&article_id=' . (int) $article_id . '&topic_id=' . $article_info['topic_id'], $item_stores, $content_hash, $languages);
         }
     }
     #endregion
 
-    private function addToQueueItemData(string $item_link, array $item_stores, string $content_hash, array $languages): void
+    private function addToQueueItemData(string $item_category, string $item_link, array $item_stores, string $content_hash, array $languages): void
     {
         $stores = [];
 
@@ -1456,6 +1408,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
 
         foreach ($stores as $store_id => $store_url) {
+            $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
+
+            if (isset($config['feed_ps_indexnow_status']) && (bool) $config['feed_ps_indexnow_status'] === false) {
+                continue;
+            }
+
+            if (!in_array($item_category, (array) $config['feed_ps_indexnow_content_category'])) {
+                continue;
+            }
+
             foreach ($languages as $language) {
                 $url = $store_url . sprintf($item_link, $language['code']);
 
