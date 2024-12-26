@@ -1417,11 +1417,15 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         foreach ($stores as $store_id => $store_url) {
             $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
 
-            if (isset($config['feed_ps_indexnow_status']) && (bool) $config['feed_ps_indexnow_status'] === false) {
+            if (!isset($config['feed_ps_indexnow_status'], $config['feed_ps_indexnow_content_category'])) {
                 continue;
             }
 
-            if (isset($config['feed_ps_indexnow_content_category']) && !in_array($item_category, (array) $config['feed_ps_indexnow_content_category'])) {
+            if ((bool) $config['feed_ps_indexnow_status'] === false) {
+                continue;
+            }
+
+            if (!in_array($item_category, (array) $config['feed_ps_indexnow_content_category'])) {
                 continue;
             }
 
