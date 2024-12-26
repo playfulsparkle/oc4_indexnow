@@ -61,8 +61,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $url_list = $result ? array_column($result, 'url') : [];
 
 
-        $all_success = true;
-
         foreach ($services as $service) {
             $batches = array_chunk($url_list, 10000);
 
@@ -84,10 +82,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                         'status_code' => (int) $status_code,
                         'store_id' => $store['store_id'],
                     ];
-                }
-
-                if ($all_success && $status_code !== 200) {
-                    $all_success = false;
                 }
 
                 $this->model_extension_ps_indexnow_feed_ps_indexnow->addLog($log_data);
