@@ -1077,6 +1077,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
             $this->load->model('localisation/language');
             $this->load->model('setting/store');
+            $this->load->model('setting/setting');
 
             $languages = $this->model_localisation_language->getLanguages();
 
@@ -1108,8 +1109,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
+        $this->load->model('setting/setting');
 
-        $item_stores = $this->model_setting_store->getStores();
+        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1136,6 +1138,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
             $this->load->model('localisation/language');
             $this->load->model('setting/store');
+            $this->load->model('setting/setting');
 
             $languages = $this->model_localisation_language->getLanguages();
 
@@ -1167,8 +1170,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
+        $this->load->model('setting/setting');
 
-        $item_stores = $this->model_setting_store->getStores();
+        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1195,6 +1199,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
             $this->load->model('localisation/language');
             $this->load->model('setting/store');
+            $this->load->model('setting/setting');
 
             $languages = $this->model_localisation_language->getLanguages();
 
@@ -1228,8 +1233,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
+        $this->load->model('setting/setting');
 
-        $item_stores = $this->model_setting_store->getStores();
+        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1258,6 +1264,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
             $this->load->model('localisation/language');
             $this->load->model('setting/store');
+            $this->load->model('setting/setting');
 
             $languages = $this->model_localisation_language->getLanguages();
 
@@ -1289,8 +1296,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
+        $this->load->model('setting/setting');
 
-        $item_stores = $this->model_setting_store->getStores();
+        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1317,6 +1325,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
             $this->load->model('localisation/language');
             $this->load->model('setting/store');
+            $this->load->model('setting/setting');
 
             $languages = $this->model_localisation_language->getLanguages();
 
@@ -1348,8 +1357,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
+        $this->load->model('setting/setting');
 
-        $item_stores = $this->model_setting_store->getStores();
+        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1376,6 +1386,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
             $this->load->model('localisation/language');
             $this->load->model('setting/store');
+            $this->load->model('setting/setting');
 
             $languages = $this->model_localisation_language->getLanguages();
 
@@ -1407,9 +1418,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
         $this->load->model('localisation/language');
         $this->load->model('setting/store');
+        $this->load->model('setting/setting');
         $this->load->model('cms/article');
 
-        $item_stores = $this->model_setting_store->getStores();
+        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1423,14 +1435,24 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
     private function addToQueueItemData(string $item_link, array $item_stores, string $content_hash, array $languages): void
     {
-        $stores = [0 => HTTP_CATALOG];
+        $stores = [];
 
         foreach ($item_stores as $store_info) {
             if (is_array($store_info)) {
                 $stores[$store_info['store_id']] = $store_info['url'];
-            } else if ($store_info > 0 && $store_data = $this->model_setting_store->getStore($store_info)) {
-                $stores[$store_data['store_id']] = $store_data['url'];
+            } else if (is_numeric($store_info)) {
+                $store_id = (int) $store_info;
+
+                if ($store_id === 0) {
+                    $stores[$store_id] = HTTP_CATALOG;
+                } else if ($store_data = $this->model_setting_store->getStore($store_id)) {
+                    $stores[$store_id] = $store_data['url'];
+                }
             }
+        }
+
+        if (!$stores) {
+            return;
         }
 
         foreach ($stores as $store_id => $store_url) {
