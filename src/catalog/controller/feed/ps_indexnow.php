@@ -94,40 +94,72 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
     private function submitUrls($service_endpoint, $host, $service_key, $service_key_location, $url_list)
     {
-        $post_data = json_encode(array(
+        $result = [];
+
+        $post_data = json_encode([
             'host' => $host,
             'key' => $service_key,
             'keyLocation' => $service_key_location,
             'urlList' => $url_list,
-        ));
+        ]);
+
+        $headers = [
+            'Content-Type: application/json; charset=utf-8',
+            'Content-Length: ' . strlen($post_data)
+        ];
 
         if (function_exists('curl_init')) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $service_endpoint);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json; charset=utf-8',
-                'Content-Length: ' . strlen($post_data)
-            ]);
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_exec($ch);
+            $response = curl_exec($ch);
 
-            $result = [];
+            if ($response !== false && !curl_errno($ch)) {
+                $status_code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-            foreach ($url_list as $url) {
-                $result[] = [
-                    'url' => $url,
-                    'status_code' => (int) curl_getinfo($ch, CURLINFO_HTTP_CODE),
-                ];
+                foreach ($url_list as $url) {
+                    $result[] = [
+                        'url' => $url,
+                        'status_code' => $status_code,
+                    ];
+                }
             }
 
             curl_close($ch);
+        } else if (ini_get('allow_url_fopen')) {
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 30,
+                    'ignore_errors' => true,
+                    'header' => $headers,
+                    'method' => 'POST',
+                    'content' => $post_data
+                ]
+            ]);
 
-            return $result;
+            $response = @file_get_contents($service_endpoint, false, $context);
+
+            if ($response !== false) {
+                $metadata = stream_get_meta_data($context);
+
+                if (isset($metadata['wrapper_data']) && preg_match('#HTTP/\d\.\d (\d+)#', $metadata['wrapper_data'][0], $matches)) {
+                    foreach ($url_list as $url) {
+                        $result[] = [
+                            'url' => $url,
+                            'status_code' => (int) $matches[1],
+                        ];
+                    }
+                }
+            }
         }
 
-        return false;
+        return $result;
     }
 }
