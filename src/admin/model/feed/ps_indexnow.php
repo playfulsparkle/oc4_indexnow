@@ -111,7 +111,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $this->db->countAffected();
     }
 
-    public function clearQueue(int $store_id)
+    public function clearQueue(int $store_id): int
     {
         $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `store_id` = '" . (int) $store_id . "'");
 

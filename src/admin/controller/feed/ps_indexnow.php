@@ -127,9 +127,14 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             'product' => $this->language->get('text_products'),
             'manufacturer' => $this->language->get('text_manufacturers'),
             'information' => $this->language->get('text_information'),
-            'topic' => $this->language->get('text_topics'),
-            'article' => $this->language->get('text_articles'),
         ];
+
+        if (version_compare(VERSION, '4.1.0.0', '>=')) {
+            $data['content_categories'] += [
+                'topic' => $this->language->get('text_topics'),
+                'article' => $this->language->get('text_articles'),
+            ];
+        }
 
         $data['text_contact'] = sprintf($this->language->get('text_contact'), self::EXTENSION_EMAIL, self::EXTENSION_EMAIL, self::EXTENSION_DOC);
 
@@ -687,8 +692,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         if (!$json) {
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
 
-            if (isset($this->request->post['store_id'])) {
-                $store_id = (int) $this->request->post['store_id'];
+            if (isset($this->request->get['store_id'])) {
+                $store_id = (int) $this->request->get['store_id'];
             } else {
                 $store_id = 0;
             }
@@ -773,8 +778,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         if (!$json) {
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
 
-            if (isset($this->request->post['store_id'])) {
-                $store_id = (int) $this->request->post['store_id'];
+            if (isset($this->request->get['store_id'])) {
+                $store_id = (int) $this->request->get['store_id'];
             } else {
                 $store_id = 0;
             }
@@ -988,13 +993,17 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             ['trigger' => 'admin/controller/catalog/information' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCatalogInformationSaveAfter'],
             ['trigger' => 'admin/controller/catalog/information' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCatalogInformationDeleteBefore'],
-
-            ['trigger' => 'admin/controller/cms/topic' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCmsTopicSaveAfter'],
-            ['trigger' => 'admin/controller/cms/topic' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCmsTopicDeleteBefore'],
-
-            ['trigger' => 'admin/controller/cms/article' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCmsArticleSaveAfter'],
-            ['trigger' => 'admin/controller/cms/article' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCmsArticleDeleteBefore'],
         ];
+
+        if (version_compare(VERSION, '4.1.0.0', '>=')) {
+            $events += [
+                ['trigger' => 'admin/controller/cms/topic' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCmsTopicSaveAfter'],
+                ['trigger' => 'admin/controller/cms/topic' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCmsTopicDeleteBefore'],
+
+                ['trigger' => 'admin/controller/cms/article' . $separator . 'save/after', 'description' => '', 'actionName' => 'eventAdminControllerCmsArticleSaveAfter'],
+                ['trigger' => 'admin/controller/cms/article' . $separator . 'delete/before', 'description' => '', 'actionName' => 'eventAdminControllerCmsArticleDeleteBefore'],
+            ];
+        }
 
         $result = 0;
 
