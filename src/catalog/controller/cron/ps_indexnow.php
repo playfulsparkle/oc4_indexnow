@@ -30,26 +30,14 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
     }
 
-    private function submit_url($store): void
+    private function submit_url(array $store): void
     {
-        $server = $store['url'];
-        $server_host = parse_url($server, PHP_URL_HOST);
+        $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store['store_id']);
 
-        if ($store['store_id'] > 0) {
-            $server = $store['url'];
-            $server_host = parse_url($server, PHP_URL_HOST);
+        if (isset($config['feed_ps_indexnow_status']) && (bool)$config['feed_ps_indexnow_status'] === false) {
+            return;
         }
 
-        $filter_data = [
-            'store_id' => $store['store_id'],
-            'order' => 'ASC',
-        ];
-
-        $result = $this->model_extension_ps_indexnow_feed_ps_indexnow->getQueue($filter_data);
-
-        $url_list = $result ? array_column($result, 'url') : [];
-
-        $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store['store_id']);
 
         if (isset($config['feed_ps_indexnow_service_status'])) {
             $services = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints((array) $config['feed_ps_indexnow_service_status']);
@@ -60,6 +48,30 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $service_key = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
         $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
+        if (empty($services)) {
+            return;
+        }
+
+
+        $server = $store['url'];
+        $server_host = parse_url($server, PHP_URL_HOST);
+
+        if ($store['store_id'] > 0) {
+            $server = $store['url'];
+            $server_host = parse_url($server, PHP_URL_HOST);
+        }
+
+
+        $filter_data = [
+            'store_id' => $store['store_id'],
+            'order' => 'ASC',
+        ];
+
+        $result = $this->model_extension_ps_indexnow_feed_ps_indexnow->getQueue($filter_data);
+
+        $url_list = $result ? array_column($result, 'url') : [];
+
+        
         $all_success = true;
 
         foreach ($services as $service) {

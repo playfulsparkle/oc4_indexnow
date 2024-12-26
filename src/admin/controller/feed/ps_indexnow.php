@@ -116,6 +116,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $data['server'] = $server;
 
+        $data['cron_url'] = HTTP_CATALOG . 'index.php?route=extension/ps_indexnow/feed/ps_indexnow';
+
+        $data['help_cron_url'] = sprintf($this->language->get('help_cron_url'), $this->url->link('marketplace/cron', 'user_token=' . $this->session->data['user_token']));
+
         $data['indexnow_services'] = $this->model_extension_ps_indexnow_feed_ps_indexnow->getIndexNowServiceList();
 
         $data['content_categories'] = [
@@ -220,7 +224,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             $this->load->model('setting/cron');
 
-            $this->model_setting_cron->addCron('ps_indexnow', 'IndexNow CRON Job', 'day', 'extension/ps_indexnow/cron/ps_indexnow', true);
+            $this->model_setting_cron->addCron('ps_indexnow', 'IndexNow Cron Job', 'day', 'extension/ps_indexnow/cron/ps_indexnow', true);
 
             $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
 
@@ -1164,10 +1168,12 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
             $content_hash = md5(json_encode($post_data));
 
+            $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
+
             if (isset($json['manufacturer_id'])) {
-                $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=' . (int) $json['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $json['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
             } else if (isset($this->request->post['manufacturer_id'])) {
-                $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=' . (int) $this->request->post['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
+                $this->addToQueueItemData('index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $this->request->post['manufacturer_id'], $manufacturer_store, $content_hash, $languages);
             }
         }
     }
@@ -1190,8 +1196,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
+        $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
+
         foreach ((array) $this->request->post['selected'] as $manufacturer_id) {
-            $this->addToQueueItemData('index.php?route=product/manufacturer&language=%s&manufacturer_id=' . (int) $manufacturer_id, $item_stores, $content_hash, $languages);
+            $this->addToQueueItemData('index.php?route=product/manufacturer' . $separator . 'info&language=%s&manufacturer_id=' . (int) $manufacturer_id, $item_stores, $content_hash, $languages);
         }
     }
     #endregion
