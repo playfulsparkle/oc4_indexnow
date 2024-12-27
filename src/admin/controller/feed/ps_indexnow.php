@@ -399,6 +399,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             return $json;
         }
 
+        $xml_mime_types = ['text/xml', 'application/xml'];
+
         $url_list = [];
 
         if (function_exists('curl_init')) {
@@ -413,14 +415,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
             $response = curl_exec($ch);
-            $error = curl_errno($ch);
-            $http_status_code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if ($response !== false && !curl_errno($ch)) {
+                $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+
+                if ($content_type && in_array($content_type, $xml_mime_types)) {
+                    $url_list = $this->process_xml_sitemap($response);
+                }
+            }
 
             curl_close($ch);
-
-            if ($response !== false && !$error && in_array((int) $http_status_code, [200, 304])) {
-                $url_list = $this->process_xml_sitemap($response);
-            }
         } else if (ini_get('allow_url_fopen')) {
             $context = stream_context_create([
                 'http' => [
@@ -435,12 +439,21 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             if ($response !== false) {
                 $metadata = stream_get_meta_data($context);
 
-                if (
-                    isset($metadata['wrapper_data']) &&
-                    preg_match('#HTTP/\d\.\d (\d+)#', $metadata['wrapper_data'][0], $matches) &&
-                    in_array((int) $matches[1], [200, 304])
-                ) {
-                    $url_list = $this->process_xml_sitemap($response);
+                if (isset($metadata['wrapper_data']) && is_array($metadata['wrapper_data'])) {
+                    $mime_type = null;
+
+                    foreach ($metadata['wrapper_data'] as $header) {
+                        $parts = explode(':', $header, 2);
+
+                        if (count($parts) === 2 && trim($parts[0]) === 'Content-Type') {
+                            $mime_type = explode(';', trim($parts[1]))[0];
+                            break;
+                        }
+                    }
+
+                    if ($mime_type && in_array($mime_type, $xml_mime_types)) {
+                        $url_list = $this->process_xml_sitemap($response);
+                    }
                 }
             }
         }
@@ -482,6 +495,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                     }
                 } catch (\Exception $e) {
 
+                }
+
+                if (count($urls) >= 50000) {
+                    break;
                 }
             }
         }
@@ -718,11 +735,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 $store_id = 0;
             }
 
-            if ($this->model_extension_ps_indexnow_feed_ps_indexnow->clearQueue($store_id)) {
-                $json['success'] = $this->language->get('text_success_clear_queue');
-            } else {
-                $json['error'] = $this->language->get('error_clear_queue');
-            }
+            $this->model_extension_ps_indexnow_feed_ps_indexnow->clearQueue($store_id);
+
+            $json['success'] = $this->language->get('text_success_clear_queue');
         }
 
         $this->response->addHeader('Content-Type: application/json');
@@ -804,11 +819,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 $store_id = 0;
             }
 
-            if ($this->model_extension_ps_indexnow_feed_ps_indexnow->clearLog($store_id)) {
-                $json['success'] = $this->language->get('text_success_clear_log');
-            } else {
-                $json['error'] = $this->language->get('error_clear_log');
-            }
+            $this->model_extension_ps_indexnow_feed_ps_indexnow->clearLog($store_id);
+
+            $json['success'] = $this->language->get('text_success_clear_log');
         }
 
         $this->response->addHeader('Content-Type: application/json');
@@ -817,6 +830,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
     private function submitUrls($service_endpoint, $host, $service_key, $service_key_location, $url_list)
     {
+        $service_endpoint .= '-test';
+
         $post_data = json_encode([
             'host' => $host,
             'key' => $service_key,
@@ -843,7 +858,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $response = curl_exec($ch);
 
             if ($response !== false && !curl_errno($ch)) {
-                $status_code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             } else {
                 $status_code = false;
             }

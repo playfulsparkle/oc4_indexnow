@@ -111,11 +111,9 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $this->db->countAffected();
     }
 
-    public function clearQueue(int $store_id): int
+    public function clearQueue(int $store_id): void
     {
         $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `store_id` = '" . (int) $store_id . "'");
-
-        return $this->db->countAffected();
     }
 
     public function getQueue(array $data = []): array
@@ -141,7 +139,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
             $sql .= " ORDER BY " . $data['sort'];
         } else {
-            $sql .= " ORDER BY `date_added`";
+            $sql .= " ORDER BY `queue_id`";
         }
 
         if (isset($data['order']) && ($data['order'] == 'DESC' || $data['order'] == 'ASC')) {
@@ -185,7 +183,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         FROM `" . DB_PREFIX . "ps_indexnow_logs` l
         LEFT JOIN `" . DB_PREFIX . "ps_indexnow_services` s ON (l.`service_id` = s.`service_id`)
         WHERE (l.`store_id` = '" . (int) $data['store_id'] . "' OR l.`store_id` IS NULL)
-        ORDER BY l.`date_added` DESC";
+        ORDER BY l.`log_id` DESC";
 
         if (isset($data['start']) || isset($data['limit'])) {
             if ($data['start'] < 0) {
@@ -232,10 +230,8 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         $this->db->query("INSERT INTO `" . DB_PREFIX . "ps_indexnow_logs` (`service_id`, `url`, `status_code`, `store_id`, `date_added`) VALUES " . implode(", ", $values));
     }
 
-    public function clearLog(int $store_id): int
+    public function clearLog(int $store_id): void
     {
         $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_logs` WHERE `store_id` = '" . (int) $store_id . "'");
-
-        return $this->db->countAffected();
     }
 }
