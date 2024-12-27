@@ -74,7 +74,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->rows;
     }
 
-    public function getServiceEndpoints(array $services): array
+    public function getServiceEndpoints(array $services = []): array
     {
         $services = array_filter($services, function ($value): bool {
             return $value > 0;
@@ -96,7 +96,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->row;
     }
 
-    public function addQueue(array $data): void
+    public function addQueue(array $data = []): void
     {
         $this->db->query("
             INSERT IGNORE INTO `" . DB_PREFIX . "ps_indexnow_queue` (`url`, `content_hash`, `store_id`, `language_id`, `date_added`)
@@ -104,7 +104,14 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         ");
     }
 
-    public function removeQueueItems(array $queue_id_list): int
+    public function removeQueue(int $queue_id): int
+    {
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `queue_id` = '" . (int) $queue_id . "'");
+
+        return $this->db->countAffected();
+    }
+
+    public function removeQueueItems(array $queue_id_list = []): int
     {
         $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `queue_id` IN (" . implode(',', $queue_id_list) . ")");
 
@@ -165,14 +172,14 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->rows;
     }
 
-    public function getTotalQueue(int $store_id)
+    public function getTotalQueue(int $store_id): int
     {
         $query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `store_id` = '" . (int) $store_id . "'");
 
         return $query->row['total'];
     }
 
-    public function getLog($data = []): array
+    public function getLog(array $data = []): array
     {
         $sql = "SELECT
             l.`log_id`,

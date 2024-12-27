@@ -43,14 +43,14 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->rows;
     }
 
-    public function removeQueueItems(array $queue_id_list): int
+    public function removeQueueItems(array $queue_id_list = []): int
     {
         $this->db->query("DELETE FROM `" . DB_PREFIX . "ps_indexnow_queue` WHERE `queue_id` IN (" . implode(',', $queue_id_list) . ")");
 
         return $this->db->countAffected();
     }
 
-    public function getServiceEndpoints(array $services): array
+    public function getServiceEndpoints(array $services = []): array
     {
         $services = array_filter($services, function ($value): bool {
             return $value > 0;
@@ -65,7 +65,7 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->rows;
     }
 
-    public function addLog(array $log_data): void
+    public function addLog(array $log_data = []): void
     {
         if (empty($log_data)) {
             return;
