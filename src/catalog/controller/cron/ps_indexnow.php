@@ -55,7 +55,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
         if (empty($services)) {
-            $this->log->write('Playful Sparkle - IndexNow: No IndexNow services are enabled');
+            $this->log->write('Playful Sparkle - IndexNow: No IndexNow services are enabled for store ID "' . $store['store_id'] . '"');
 
             return;
         }
