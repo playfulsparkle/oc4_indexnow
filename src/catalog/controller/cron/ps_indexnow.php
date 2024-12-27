@@ -26,7 +26,11 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         );
 
         foreach ($stores as $store) {
-            $this->submit_url($store);
+            try {
+                $this->submit_url($store);
+            } catch (\Exception $exception) {
+                $this->log->write($exception->getMessage());
+            }
         }
     }
 
@@ -34,7 +38,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     {
         $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store['store_id']);
 
-        if (isset($config['feed_ps_indexnow_status']) && (bool)$config['feed_ps_indexnow_status'] === false) {
+        if (isset($config['feed_ps_indexnow_status']) && (bool) $config['feed_ps_indexnow_status'] === false) {
+            $this->log->write('Playful Sparkle - IndexNow: Extension not enabled for store ID "' . $store['store_id'] . '"');
+
             return;
         }
 
@@ -49,6 +55,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
         if (empty($services)) {
+            $this->log->write('Playful Sparkle - IndexNow: No IndexNow services are enabled');
+
             return;
         }
 
