@@ -3,10 +3,11 @@
 $_['heading_title']                       = 'Playful Sparkle - IndexNow';
 $_['heading_fix']                         = 'Oprava běžných chyb';
 $_['heading_getting_started']             = 'Začínáme';
-$_['heading_setup']                       = 'Nastavení Google reCAPTCHA';
+$_['heading_setup']                       = 'Nastavení IndexNow';
 $_['heading_troubleshot']                 = 'Řešení běžných problémů';
 $_['heading_faq']                         = 'Často kladené dotazy';
 $_['heading_contact']                     = 'Kontaktujte podporu';
+$_['heading_services']                    = 'Služby IndexNow';
 
 // Text
 $_['text_extension']                      = 'Rozšíření';
