@@ -84,7 +84,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $data['feed_ps_indexnow_service_key'] = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
         $data['feed_ps_indexnow_service_key_location'] = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
-        if ($data['feed_ps_indexnow_service_key_location']) {
+        if (!empty($data['feed_ps_indexnow_service_key_location'])) {
             $data['feed_ps_indexnow_service_key_url'] = $server . $data['feed_ps_indexnow_service_key_location'];
         } else {
             $data['feed_ps_indexnow_service_key_url'] = '';
