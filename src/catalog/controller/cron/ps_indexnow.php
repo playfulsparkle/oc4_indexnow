@@ -118,8 +118,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
     private function submitUrls($service_endpoint, $host, $service_key, $service_key_location, $url_list)
     {
-        $service_endpoint .= '-test';
-
         $post_data = json_encode([
             'host' => $host,
             'key' => $service_key,
