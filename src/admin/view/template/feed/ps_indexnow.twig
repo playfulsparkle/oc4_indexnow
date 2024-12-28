@@ -86,7 +86,7 @@
 								<label for="input-service-key" class="col-sm-2 col-form-label">{{ entry_service_key }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
-										<input type="text" name="feed_ps_indexnow_service_key" value="{{ feed_ps_indexnow_service_key }}" placeholder="{{ entry_service_key }}" id="input-service-key" class="form-control" style="background-color: var(--bs-secondary-bg);" readonly>
+										<input type="text" name="feed_ps_indexnow_service_key" value="{{ feed_ps_indexnow_service_key }}" placeholder="{{ entry_service_key }}" id="input-service-key" class="form-control">
 										<span class="input-group-btn">
 											<button type="button" class="btn btn-success btn-generate-service-key" data-bs-toggle="tooltip" title="{{ button_change_key }}"><i class="fa-solid fa-rotate"></i> {{ button_change_key }}</button>
 										</span>
@@ -100,11 +100,13 @@
 								<label for="input-service-key-location" class="col-sm-2 col-form-label">{{ entry_service_key_location }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
-										<input type="text" name="feed_ps_indexnow_service_key_location" value="{{ feed_ps_indexnow_service_key_location }}" data-service-key-url="{{ feed_ps_indexnow_service_key_url }}" placeholder="{{ entry_service_key_location }}" id="input-service-key-location" class="form-control" style="background-color: var(--bs-secondary-bg);" readonly>
+										<div class="input-group-text">{{ server }}</div>
+										<input type="text" name="feed_ps_indexnow_service_key_location" value="{{ feed_ps_indexnow_service_key_location }}" data-server="{{ server }}" data-service-key-url="{{ feed_ps_indexnow_service_key_url }}" placeholder="{{ entry_service_key_location }}" id="input-service-key-location" class="form-control">
 										<span class="input-group-btn">
 											<button type="button" class="btn btn-warning btn-open-service-key" data-bs-toggle="tooltip" title="{{ button_check_key }}"><i class="fa-solid fa-key"></i> {{ button_check_key }}</button>
 										</span>
 									</div>
+									<div id="error-input-service-key-location" class="invalid-feedback"></div>
 									<div class="form-text">{{ help_service_key_location }}</div>
 								</div>
 							</div>
@@ -225,6 +227,20 @@
 	</div>
 </div>
 <script>
+	$('#input-service-key').on('input', function () {
+		var serviceKey = $(this).val();
+		var serviceKeyInput = $('#input-service-key-location');
+		var server = serviceKeyInput.data('server');
+		var keyLocationValue = '', keyLocationUrl = '';
+
+		if (serviceKey.length > 0) {
+			keyLocationValue = serviceKey + '.txt';
+			keyLocationUrl = server + serviceKey + '.txt';
+		}
+
+		serviceKeyInput.val(keyLocationValue).data('service-key-url', keyLocationUrl);
+	});
+
 	$('.btn-copy').on('click', function () {
 		var copyText = $("#" + $(this).data('inputId'));
 

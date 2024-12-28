@@ -173,7 +173,10 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
 
         if (!$json) {
-            $required_keys = ['feed_ps_indexnow_service_key'];
+            $required_keys = [
+                'feed_ps_indexnow_service_key',
+                'feed_ps_indexnow_service_key_location',
+            ];
 
             foreach ($required_keys as $value) {
                 if (!isset($this->request->post[$value])) {
@@ -181,8 +184,22 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 }
             }
 
-            if (empty($this->request->post['feed_ps_indexnow_service_key'])) {
+            if (!preg_match('/^[a-zA-Z0-9\-]{8,128}$/', (string) $this->request->post['feed_ps_indexnow_service_key'])) {
                 $json['error']['input-service-key'] = $this->language->get('error_service_key');
+            }
+
+            $parsed_url = parse_url((string) $this->request->post['feed_ps_indexnow_service_key_location']);
+
+            if (
+                isset($parsed_url['scheme']) ||
+                isset($parsed_url['host']) ||
+                isset($parsed_url['port']) ||
+                isset($parsed_url['query']) ||
+                isset($parsed_url['fragment']) ||
+                empty($parsed_url['path']) ||
+                substr($parsed_url['path'], 0, 1) === '/'
+            ) {
+                $json['error']['input-service-key-location'] = $this->language->get('error_service_key_location');
             }
         }
 
