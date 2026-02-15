@@ -46,16 +46,18 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
 
         if (isset($config['feed_ps_indexnow_service_status'])) {
-            $services = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints((array) $config['feed_ps_indexnow_service_status']);
+            $serviceId = (int) $config['feed_ps_indexnow_service_status'];
+
+            $service = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints($serviceId);
         } else {
-            $services = [];
+            $service = false;
         }
 
         $service_key = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
         $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
         if (empty($services)) {
-            $this->log->write('Playful Sparkle - IndexNow: No IndexNow services are enabled for store ID "' . $store['store_id'] . '"');
+            $this->log->write('Playful Sparkle - IndexNow: No IndexNow service is configured for store ID "' . $store['store_id'] . '"');
 
             return;
         }
@@ -80,33 +82,29 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $url_list = $result ? array_column($result, 'url') : [];
 
 
-        foreach ($services as $service) {
-            $batches = array_chunk($url_list, 10000);
+        $batches = array_chunk($url_list, 10000);
 
-            foreach ($batches as $batch) {
-                $status_code = $this->submitUrls(
-                    $service['endpoint_url'],
-                    $server_host,
-                    $service_key,
-                    $server . $service_key_location,
-                    $batch
-                );
+        foreach ($batches as $batch) {
+            $status_code = $this->submitUrls(
+                $service['endpoint_url'],
+                $server_host,
+                $service_key,
+                $server . $service_key_location,
+                $batch
+            );
 
-                $log_data = [];
+            $log_data = [];
 
-                foreach ($batch as $batch_url) {
-                    $log_data[] = [
-                        'service_id' => $service['service_id'],
-                        'url' => $batch_url,
-                        'status_code' => (int) $status_code,
-                        'store_id' => $store['store_id'],
-                    ];
-                }
-
-                $this->model_extension_ps_indexnow_feed_ps_indexnow->addLog($log_data);
-
-                sleep(1);
+            foreach ($batch as $batch_url) {
+                $log_data[] = [
+                    'service_id' => $service['service_id'],
+                    'url' => $batch_url,
+                    'status_code' => (int) $status_code,
+                    'store_id' => $store['store_id'],
+                ];
             }
+
+            $this->model_extension_ps_indexnow_feed_ps_indexnow->addLog($log_data);
         }
 
         if ($result && $services) {
@@ -149,7 +147,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 $status_code = false;
             }
 
-            curl_close($ch);
+            if ($ch && PHP_VERSION_ID < 80500) {
+                curl_close($ch);
+            }
 
             return $status_code;
         } else if (ini_get('allow_url_fopen')) {

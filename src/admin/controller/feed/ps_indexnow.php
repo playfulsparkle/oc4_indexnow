@@ -68,7 +68,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
         $data['action'] = $this->url->link('extension/ps_indexnow/feed/ps_indexnow' . $separator . 'save', 'user_token=' . $this->session->data['user_token']);
         $data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=feed');
-        $data['fix_event_handler'] = $this->url->link('extension/ps_indexnow/feed/ps_indexnow' . $separator . 'fixEventHandler', 'user_token=' . $this->session->data['user_token']);
 
         $data['user_token'] = $this->session->data['user_token'];
 
@@ -80,7 +79,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $server = $this->get_store_url($store_id);
 
         $data['feed_ps_indexnow_status'] = isset($config['feed_ps_indexnow_status']) ? (bool) $config['feed_ps_indexnow_status'] : false;
-        $data['feed_ps_indexnow_service_status'] = isset($config['feed_ps_indexnow_service_status']) ? (array) $config['feed_ps_indexnow_service_status'] : [];
+        $data['feed_ps_indexnow_service_status'] = isset($config['feed_ps_indexnow_service_status']) ? (int) $config['feed_ps_indexnow_service_status'] : 0;
         $data['feed_ps_indexnow_service_key'] = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
         $data['feed_ps_indexnow_service_key_location'] = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
@@ -234,12 +233,14 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             foreach ($stores as $store_id) {
                 $service_key = $this->save_service_key();
 
-                $data = [
-                    'feed_ps_indexnow_service_key' => $service_key,
-                    'feed_ps_indexnow_service_key_location' => $service_key . '.txt',
-                ];
+                if ($service_key) {
+                    $data = [
+                        'feed_ps_indexnow_service_key' => $service_key,
+                        'feed_ps_indexnow_service_key_location' => $service_key . '.txt',
+                    ];
 
-                $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
+                    $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
+                }
             }
 
             $this->load->model('setting/event');
@@ -446,7 +447,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 }
             }
 
-            curl_close($ch);
+            if ($ch && PHP_VERSION_ID < 80500) {
+                curl_close($ch);
+            }
         } else if (ini_get('allow_url_fopen')) {
             $context = stream_context_create([
                 'http' => [
@@ -690,50 +693,48 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
 
             if (isset($config['feed_ps_indexnow_service_status'])) {
-                $services = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints((array) $config['feed_ps_indexnow_service_status']);
+                $serviceId = (int) $config['feed_ps_indexnow_service_status'];
+
+                $service = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints($serviceId);
             } else {
-                $services = [];
+                $service = false;
             }
 
             $service_key = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
             $service_key_location = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
-            if (!$services) {
+            if (!$service) {
                 $json['error'] = $this->language->get('error_no_services_enabled');
             }
         }
 
         if (!$json) {
-            foreach ($services as $service) {
-                $batches = array_chunk($url_list, 10000);
+            $batches = array_chunk($url_list, 10000);
 
-                foreach ($batches as $batch) {
-                    $status_code = $this->submitUrls(
-                        $service['endpoint_url'],
-                        $server_host,
-                        $service_key,
-                        $server . $service_key_location,
-                        $batch
-                    );
+            foreach ($batches as $batch) {
+                $status_code = $this->submitUrls(
+                    $service['endpoint_url'],
+                    $server_host,
+                    $service_key,
+                    $server . $service_key_location,
+                    $batch
+                );
 
-                    $log_data = [];
+                $log_data = [];
 
-                    foreach ($batch as $batch_url) {
-                        $log_data[] = [
-                            'service_id' => $service['service_id'],
-                            'url' => $batch_url,
-                            'status_code' => (int) $status_code,
-                            'store_id' => $store_id,
-                        ];
-                    }
-
-                    $this->model_extension_ps_indexnow_feed_ps_indexnow->addLog($log_data);
-
-                    sleep(1);
+                foreach ($batch as $batch_url) {
+                    $log_data[] = [
+                        'service_id' => $service['service_id'],
+                        'url' => $batch_url,
+                        'status_code' => (int) $status_code,
+                        'store_id' => $store_id,
+                    ];
                 }
+
+                $this->model_extension_ps_indexnow_feed_ps_indexnow->addLog($log_data);
             }
 
-            if ($services && $queue_id_list) {
+            if ($service && $queue_id_list) {
                 $this->model_extension_ps_indexnow_feed_ps_indexnow->removeQueueItems($queue_id_list);
             }
 
@@ -858,6 +859,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
     private function submitUrls($service_endpoint, $host, $service_key, $service_key_location, $url_list)
     {
+        return 202; // remove
+
         $post_data = json_encode([
             'host' => $host,
             'key' => $service_key,
@@ -889,7 +892,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 $status_code = false;
             }
 
-            curl_close($ch);
+            if ($ch && PHP_VERSION_ID < 80500) {
+                curl_close($ch);
+            }
 
             return $status_code;
         } else if (ini_get('allow_url_fopen')) {
@@ -930,11 +935,11 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
 
     private function save_service_key()
     {
-        if (!is_writable(DIR_OPENCART)) {
-            return false;
-        }
-
         try {
+            if (!is_writable(DIR_OPENCART)) {
+                return false;
+            }
+
             $service_key = $this->generateServiceKey();
 
             $filename = DIR_OPENCART . $service_key . '.txt';
@@ -1005,32 +1010,6 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
 
         return $randomKey;
-    }
-
-    public function fixEventHandler(): void
-    {
-        $this->load->language('extension/ps_indexnow/feed/ps_indexnow');
-
-        $json = [];
-
-        if (!$this->user->hasPermission('modify', 'extension/ps_indexnow/feed/ps_indexnow')) {
-            $json['error'] = $this->language->get('error_permission');
-        }
-
-        if (!$json) {
-            $this->load->model('setting/event');
-
-            $this->_unregisterEvents();
-
-            if ($this->_registerEvents() > 0) {
-                $json['success'] = $this->language->get('text_success');
-            } else {
-                $json['error'] = $this->language->get('error_event');
-            }
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
     }
 
     private function _unregisterEvents(): void

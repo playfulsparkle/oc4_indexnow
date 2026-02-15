@@ -36,12 +36,12 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         $this->db->query("
             INSERT INTO `" . DB_PREFIX . "ps_indexnow_services` (`service_id`, `service_name`, `endpoint_url`)
             VALUES
-                (1, 'Microsoft Bing', 'https://www.bing.com/indexnow'),
-                (2, 'Naver', 'https://searchadvisor.naver.com/indexnow'),
-                (3, 'Seznam.cz', 'https://search.seznam.cz/indexnow'),
-                (4, 'Yandex', 'https://yandex.com/indexnow'),
-                (5, 'Yep', 'https://indexnow.yep.com/indexnow'),
-                (6, 'Internet Archive', 'https://web-static.archive.org/indexnow');
+                (1, 'IndexNow (global)', 'https://api.indexnow.org/indexnow'),
+                (2, 'Microsoft Bing', 'https://www.bing.com/indexnow'),
+                (3, 'Naver', 'https://searchadvisor.naver.com/indexnow'),
+                (4, 'Seznam.cz', 'https://search.seznam.cz/indexnow'),
+                (5, 'Yandex', 'https://yandex.com/indexnow'),
+                (6, 'Yep', 'https://indexnow.yep.com/indexnow');
         ");
 
         $this->db->query("
@@ -74,19 +74,15 @@ class PsIndexNow extends \Opencart\System\Engine\Model
         return $query->rows;
     }
 
-    public function getServiceEndpoints(array $services = []): array
+    public function getServiceEndpoints(int $value = 0): array|bool
     {
-        $services = array_filter($services, function ($value): bool {
-            return $value > 0;
-        });
+        $query = $this->db->query("SELECT `service_id`, `endpoint_url` FROM `" . DB_PREFIX . "ps_indexnow_services` WHERE `service_id` = '" . (int) $this->db->escape($value) . "'");
 
-        if (empty($services)) {
-            return [];
+        if ($query->num_rows === 0) {
+            return false;
         }
 
-        $query = $this->db->query("SELECT `service_id`, `endpoint_url` FROM `" . DB_PREFIX . "ps_indexnow_services` WHERE `service_id` IN (" . implode(',', array_keys($services)) . ")");
-
-        return $query->rows;
+        return $query->row;
     }
 
     public function getSeoUrlByKeyValue(string $key, string $value, int $store_id, int $language_id): array

@@ -1,13 +1,12 @@
 <?php
 // Heading
 $_['heading_title']                       = 'Playful Sparkle - IndexNow';
-$_['heading_fix']                         = 'Oprava bežných chýb';
 $_['heading_getting_started']             = 'Začíname';
 $_['heading_setup']                       = 'Nastavenie IndexNow';
 $_['heading_troubleshot']                 = 'Bežné problémy';
 $_['heading_faq']                         = 'Často kladené otázky';
 $_['heading_contact']                     = 'Kontaktujte podporu';
-$_['heading_services']                    = 'Služby IndexNow';
+$_['entry_indexnow_services']                    = 'Služby IndexNow';
 
 // Text
 $_['text_extension']                      = 'Rozšírenia';
@@ -20,13 +19,7 @@ $_['text_success_submit_queue']           = 'Úspech: URL v čakacej rade boli �
 $_['text_success_submit_url_list']        = 'Úspech: Zoznam URL bol úspešne odoslaný!';
 $_['text_edit']                           = 'Upraviť IndexNow';
 $_['text_getting_started']                = '<p><strong>Prehľad:</strong> Rozšírenie <strong>Playful Sparkle - IndexNow</strong> pre OpenCart 4.x+ umožňuje vášmu obchodu automaticky informovať vyhľadávače ako Bing a Yandex, keď sa pridá, upraví alebo odstráni obsah vášho obchodu. Týmto sa zabezpečí rýchlejšie indexovanie zmien, čo zlepší viditeľnosť vášho obchodu a výkonnosť vo vyhľadávaní. Ponúka funkcie ako manuálne odosielanie URL, odosielanie URL do čakacej rady, prispôsobiteľné nastavenia a podporu Cron.</p><p><strong>Požiadavky:</strong> OpenCart 4.x+, PHP 7.4+ alebo vyšší.</p>';
-$_['text_setup']                          = '<ul><li><strong>Krok 1: Nainštalujte rozšírenie</strong> - Stiahnite a nainštalujte rozšírenie prostredníctvom administrátorského panelu OpenCart. Po nainštalovaní bude automaticky vygenerovaný servisný kľúč pre každý obchod.</li>
-<li><strong>Krok 2: Povoliť rozšírenie pre váš obchod</strong> - Prejdite do nastavení rozšírenia a povolte rozšírenie pre každý obchod, v ktorom chcete používať služby IndexNow.</li>
-<li><strong>Krok 3: Povolte služby IndexNow pre váš obchod</strong> - V nastaveniach rozšírenia povoľte služby IndexNow pre vybraný obchod. Môžete si tiež vybrať, či chcete povoliť alebo zakázať konkrétne služby IndexNow pre každý obchod.</li>
-<li><strong>Krok 4: Nastavte možnosti notifikácie pre vyhľadávače</strong> - Povoľte tieto možnosti, aby ste informovali vyhľadávače, keď sa pridá, upraví alebo odstráni obsah, ako sú kategórie, produkty, výrobcovia alebo články. Týmto zabezpečíte, že vyhľadávače budú aktuálne.</li>
-<li><strong>Krok 5: Znova vygenerujte servisný kľúč (voliteľné)</strong> - Ak je to potrebné, môžete znovu vygenerovať servisný kľúč pre každý obchod samostatne prostredníctvom nastavení rozšírenia.</li>
-<li><strong>Krok 6: Odosielanie URL</strong> - Odosielajte URL do služieb IndexNow buď odoslaním URL v čakacej rade, importovaním alebo nahratím vášho XML súboru sitemap, alebo manuálnym zadaním URL a odoslaním do služieb IndexNow.</li>
-<li><strong>Krok 7: Monitorovanie logov</strong> - Po odoslaní URL môžete skontrolovať kartu Log na zobrazenie výsledkov odoslaní. Ak je to potrebné, môžete tiež vyčistiť log.</li></ul>';
+$_['text_setup']                          = '<ul><li><strong>Krok 1: Inštalácia rozšírenia</strong> - Nahrajte a nainštalujte rozšírenie v administračnom paneli OpenCart. Po inštalácii sa automaticky vygeneruje servisný kľúč pre každý obchod.</li><li><strong>Krok 2: Povolenie rozšírenia pre každý obchod</strong> - Otvorte nastavenia rozšírenia a povoľte ho pre každý obchod, v ktorom chcete používať IndexNow.</li><li><strong>Krok 3: Výber služby IndexNow</strong> - Vyberte koncový bod IndexNow, do ktorého chcete odosielať údaje.</li><li><strong>Krok 4: Konfigurácia automatického upozornenia</strong> - Povoľte možnosti automatického upozornenia na odosielanie adries URL pri pridaní, aktualizácii alebo odstránení kategórií, produktov, výrobcov alebo článkov.</li><li><strong>Krok 5: Opätovné vygenerovanie servisného kľúča (voliteľné)</strong> - V prípade potreby môžete v nastaveniach rozšírenia znova vygenerovať servisný kľúč samostatne pre každý obchod.</li><li><strong>Krok 6: Odoslanie adries URL</strong> - Adresy URL odošlite spracovaním frontu, importovaním mapy stránok XML, nahraním súboru mapy stránok alebo manuálnym zadaním adries URL.</li><li><strong>Krok 7: Sledovanie protokolov</strong> - Po odoslaní skontrolujte výsledky na karte "Protokol". V prípade potreby môžete protokol aj vymazať.</li></ul>';
 $_['text_troubleshot']                    = '<details><summary><strong>Zoznam odoslaných URL obsahuje neplatné URL alebo URL s hostiteľom, ktorý nezodpovedá aktívnemu obchodu</strong></summary> Uistite sa, že textové pole zoznamu URL obsahuje platné URL a že doména URL zodpovedá doméne aktívneho obchodu.</details>
 <details><summary><strong>Nezobrazuje sa súbor sitemap xyz</strong></summary> Uistite sa, že URL súboru sitemap je správne zadaná.</details>
 <details><summary><strong>Neplatný typ súboru. Nahrajte platný súbor</strong></summary> Uistite sa, že nahrávate platný XML súbor sitemap.</details>
@@ -81,7 +74,6 @@ $_['entry_load_sitemap']                  = 'Načítať Sitemap';
 $_['entry_cron_url']                      = 'Cron URL';
 
 // Button
-$_['button_fix_event_handler']            = 'Opraviť spracovateľ udalostí';
 $_['button_change_key']                   = 'Zmeniť kľúč';
 $_['button_check_key']                    = 'Skontrolovať kľúč';
 $_['button_submit_url']                   = 'Odoslať URL';

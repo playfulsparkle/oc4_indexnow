@@ -1,13 +1,12 @@
 <?php
 // Heading
 $_['heading_title']                       = 'Playful Sparkle - IndexNow';
-$_['heading_fix']                         = 'Risoluzione dei bug comuni';
 $_['heading_getting_started']             = 'Inizio';
 $_['heading_setup']                       = 'Impostazione di IndexNow';
 $_['heading_troubleshot']                 = 'Risoluzione dei problemi comuni';
 $_['heading_faq']                         = 'Domande frequenti';
 $_['heading_contact']                     = 'Contatta il supporto';
-$_['heading_services']                    = 'Servizi IndexNow';
+$_['entry_indexnow_services']                    = 'Servizi IndexNow';
 
 // Text
 $_['text_extension']                      = 'Estensioni';
@@ -20,13 +19,7 @@ $_['text_success_submit_queue']           = 'Successo: Gli URL in coda sono stat
 $_['text_success_submit_url_list']        = 'Successo: La lista degli URL è stata inviata correttamente!';
 $_['text_edit']                           = 'Modifica IndexNow';
 $_['text_getting_started']                = '<p><strong>Panoramica:</strong> L\'estensione <strong>Playful Sparkle - IndexNow</strong> per OpenCart 4.x+ consente al tuo negozio di notificare automaticamente i motori di ricerca come Bing e Yandex quando i contenuti del tuo negozio vengono aggiunti, aggiornati o eliminati. Questo garantisce una più rapida indicizzazione delle modifiche, migliorando la visibilità e le performance di ricerca del tuo negozio. Offre funzionalità come l\'invio manuale di URL, l\'invio di URL in coda, impostazioni personalizzabili e supporto Cron.</p><p><strong>Requisiti:</strong> OpenCart 4.x+, PHP 7.4+ o superiore.</p>';
-$_['text_setup']                          = '<ul><li><strong>Passo 1: Installa l\'Estensione</strong> - Scarica e installa l\'estensione tramite il pannello di amministrazione di OpenCart. Una volta installato, la chiave del servizio verrà generata automaticamente per ogni negozio.</li>
-<li><strong>Passo 2: Abilita l\'Estensione per il Tuo Negozio</strong> - Vai alle impostazioni dell\'estensione e abilita l\'estensione per ogni negozio in cui desideri utilizzare i servizi IndexNow.</li>
-<li><strong>Passo 3: Abilita i Servizi IndexNow per il Tuo Negozio</strong> - Nelle impostazioni dell\'estensione, abilita i servizi IndexNow per il negozio selezionato. Puoi anche scegliere di abilitare o disabilitare servizi specifici per ogni negozio.</li>
-<li><strong>Passo 4: Imposta le Opzioni di Notifica ai Motori di Ricerca</strong> - Abilita queste opzioni per notificare ai motori di ricerca quando contenuti come categorie, prodotti, produttori o articoli vengono aggiunti, aggiornati o eliminati. Questo garantisce che i motori di ricerca rimangano aggiornati.</li>
-<li><strong>Passo 5: Rigenera la Chiave del Servizio (Opzionale)</strong> - Se necessario, puoi rigenerare la chiave del servizio per ogni negozio separatamente tramite le impostazioni dell\'estensione.</li>
-<li><strong>Passo 6: Invia gli URL</strong> - Invia gli URL ai servizi IndexNow, inviando gli URL in coda, importando/caricando la tua sitemap XML, o inserendo manualmente un URL e inviandolo ai servizi IndexNow.</li>
-<li><strong>Passo 7: Monitora i Log</strong> - Una volta inviati gli URL, puoi controllare la scheda Log per vedere i risultati delle spedizioni. Puoi anche cancellare il log se necessario.</li></ul>';
+$_['text_setup']                          = '<ul><li><strong>Passaggio 1: Installazione dell\'estensione</strong> - Carica e installa l\'estensione nel pannello di amministrazione di OpenCart. Dopo l\'installazione, viene generata automaticamente una chiave di servizio per ogni negozio.</li><li><strong>Passaggio 2: Abilitazione dell\'estensione per negozio</strong> - Apri le impostazioni dell\'estensione e abilitala per ogni negozio in cui desideri utilizzare IndexNow.</li><li><strong>Passaggio 3: Selezione di un servizio IndexNow</strong> - Seleziona l\'endpoint IndexNow a cui desideri inviare i dati.</li><li><strong>Passaggio 4: Configurazione della notifica automatica</strong> - Abilita le opzioni di notifica automatica per inviare gli URL quando categorie, prodotti, produttori o articoli vengono aggiunti, aggiornati o eliminati.</li><li><strong>Passaggio 5: Rigenerazione della chiave di servizio (opzionale)</strong> - Se necessario, è possibile rigenerare la chiave di servizio separatamente per ogni negozio nelle impostazioni dell\'estensione.</li><li><strong>Passaggio 6: Invio degli URL</strong> - Invia gli URL elaborando la coda, importando la sitemap XML, caricando un file sitemap o inserendo manualmente gli URL.</li><li><strong>Passaggio 7: Monitoraggio dei log</strong> - Dopo l\'invio, controlla la scheda "Log" per i risultati. È inoltre possibile cancellare il log se necessario.</li></ul>';
 $_['text_troubleshot']                    = '<details><summary><strong>La lista degli URL inviati contiene URL non validi o URL con un host che non corrisponde al dominio del negozio attivo</strong></summary> Assicurati che il campo di testo della lista degli URL contenga URL validi e che l\'host (dominio) degli URL corrisponda al dominio del negozio attivo.</details>
 <details><summary><strong>Impossibile scaricare il file della sitemap xyz</strong></summary> Assicurati che l\'URL della sitemap sia inserito correttamente.</details>
 <details><summary><strong>Tipo di file non valido. Carica un file valido</strong></summary> Assicurati di caricare un file sitemap XML valido.</details>
@@ -81,7 +74,7 @@ $_['entry_load_sitemap']                  = 'Carica Sitemap';
 $_['entry_cron_url']                      = 'URL Cron';
 
 // Button
-$_['button_fix_event_handler']            = 'Correggi il gestore eventi';
+$_['']            = 'Correggi il gestore eventi';
 $_['button_change_key']                   = 'Cambia Chiave';
 $_['button_check_key']                    = 'Verifica Chiave';
 $_['button_submit_url']                   = 'Invia URL';

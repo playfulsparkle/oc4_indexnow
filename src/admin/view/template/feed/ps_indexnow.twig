@@ -51,22 +51,19 @@
 								</div>
 							</div>
 
-							<fieldset class="p-3 mb-3">
-								<legend>{{ heading_services }}</legend>
-
-								{% for indexnow_service in indexnow_services %}
-								<div class="row mb-3">
-									<label for="input-service-status-{{ indexnow_service.service_id }}" class="col-sm-2 col-form-label">{{ indexnow_service.service_name }}</label>
-									<div class="col-sm-10">
-										<div class="form-check form-switch form-switch-lg">
-											<input type="hidden" name="feed_ps_indexnow_service_status[{{ indexnow_service.service_id }}]" value="0">
-											<input type="checkbox" name="feed_ps_indexnow_service_status[{{ indexnow_service.service_id }}]" value="1" id="input-service-status-{{ indexnow_service.service_id }}" data-controls="tab-link-service-{{ indexnow_service.service_id }}" class="form-check-input" {% if feed_ps_indexnow_service_status[indexnow_service.service_id] %} checked{% endif %}>
-										</div>
+							<div class="row mb-3">
+								<label class="col-sm-2 col-form-label">{{ entry_indexnow_services }}</label>
+								<div class="col-sm-10">
+									<div id="product-store" class="form-control" style="height: 150px; overflow: auto;">
+										{% for indexnow_service in indexnow_services %}
+											<div class="form-check">
+												<input type="radio" name="feed_ps_indexnow_service_status" value="{{ indexnow_service.service_id }}" id="input-service-status-{{ indexnow_service.service_id }}" class="form-check-input"{% if indexnow_service.service_id == feed_ps_indexnow_service_status %} checked{% endif %}/>
+												<label for="input-service-status-{{ indexnow_service.service_id }}" class="form-check-label">{{ indexnow_service.service_name }}</label>
+											</div>
+										{% endfor %}
 									</div>
 								</div>
-								{% endfor %}
-
-							</fieldset>
+							</div>
 
 							<div class="row mb-3">
 								<label class="col-sm-2 col-form-label">{{ entry_notify_search_engines }}</label>
@@ -201,13 +198,6 @@
 							<hr>
 							<h3>{{ heading_troubleshot }}</h3>
 							{{ text_troubleshot }}
-							<hr>
-							<h2>{{ heading_fix }}</h2>
-							<div class="row mb-3">
-								<div class="col-sm-10">
-									<button type="button" data-fix-action="{{ fix_event_handler }}" data-bs-toggle="tooltip" title="{{ button_fix_event_handler }}" class="btn btn-primary"><i class="fa-solid fa-gear"></i> {{ button_fix_event_handler }}</button>
-								</div>
-							</div>
 							<hr>
 							<h3>{{ heading_faq }}</h3>
 							{{ text_faq }}
@@ -627,36 +617,6 @@
 					$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 
 					$('#log-content').load('index.php?route=extension/ps_indexnow/feed/ps_indexnow{{ oc4_separator }}log&store_id={{ store_id }}&user_token={{ user_token }}');
-				}
-			},
-			error: function (xhr, ajaxOptions, thrownError) {
-				console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-			}
-		});
-	});
-
-	$('button[data-fix-action]').on('click', function () {
-		var $this = $(this);
-		var action = $(this).data('fix-action');
-
-		$.ajax({
-			url: action,
-			dataType: 'json',
-			beforeSend: function () {
-				$($this).button('loading');
-			},
-			complete: function () {
-				$($this).button('reset');
-			},
-			success: function (json) {
-				$('.alert-dismissible').remove();
-
-				if (json['error']) {
-					$('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
-				}
-
-				if (json['success']) {
-					$('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
