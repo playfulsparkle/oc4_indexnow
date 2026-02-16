@@ -224,37 +224,35 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
      */
     public function install(): void
     {
-        if ($this->user->hasPermission('modify', 'extension/feed')) {
-            $this->load->model('setting/store');
-            $this->load->model('setting/setting');
+        $this->load->model('setting/store');
+        $this->load->model('setting/setting');
 
-            $stores = array_merge([0], array_column($this->model_setting_store->getStores(), 'store_id'));
+        $stores = array_merge([0], array_column($this->model_setting_store->getStores(), 'store_id'));
 
-            foreach ($stores as $store_id) {
-                $service_key = $this->save_service_key();
+        foreach ($stores as $store_id) {
+            $service_key = $this->save_service_key();
 
-                if ($service_key) {
-                    $data = [
-                        'feed_ps_indexnow_service_key' => $service_key,
-                        'feed_ps_indexnow_service_key_location' => $service_key . '.txt',
-                    ];
+            if ($service_key) {
+                $data = [
+                    'feed_ps_indexnow_service_key' => $service_key,
+                    'feed_ps_indexnow_service_key_location' => $service_key . '.txt',
+                ];
 
-                    $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
-                }
+                $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
             }
-
-            $this->load->model('setting/event');
-
-            $this->_registerEvents();
-
-            $this->load->model('setting/cron');
-
-            $this->model_setting_cron->addCron('ps_indexnow', 'IndexNow Cron Job', 'day', 'extension/ps_indexnow/cron/ps_indexnow', true);
-
-            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
-
-            $this->model_extension_ps_indexnow_feed_ps_indexnow->install();
         }
+
+        $this->load->model('setting/event');
+
+        $this->_registerEvents();
+
+        $this->load->model('setting/cron');
+
+        $this->model_setting_cron->addCron('ps_indexnow', 'IndexNow Cron Job', 'day', 'extension/ps_indexnow/cron/ps_indexnow', true);
+
+        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+
+        $this->model_extension_ps_indexnow_feed_ps_indexnow->install();
     }
 
     /**
@@ -267,19 +265,17 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
      */
     public function uninstall(): void
     {
-        if ($this->user->hasPermission('modify', 'extension/feed')) {
-            $this->load->model('setting/event');
+        $this->load->model('setting/event');
 
-            $this->_unregisterEvents();
+        $this->_unregisterEvents();
 
-            $this->load->model('setting/cron');
+        $this->load->model('setting/cron');
 
-            $this->model_setting_cron->deleteCronByCode('ps_indexnow');
+        $this->model_setting_cron->deleteCronByCode('ps_indexnow');
 
-            $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
+        $this->load->model('extension/ps_indexnow/feed/ps_indexnow');
 
-            $this->model_extension_ps_indexnow_feed_ps_indexnow->uninstall();
-        }
+        $this->model_extension_ps_indexnow_feed_ps_indexnow->uninstall();
     }
 
     public function generate_service_key(): void
