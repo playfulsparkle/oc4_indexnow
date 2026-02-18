@@ -79,7 +79,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $server = $this->get_store_url($store_id);
 
         $data['feed_ps_indexnow_status'] = isset($config['feed_ps_indexnow_status']) ? (bool) $config['feed_ps_indexnow_status'] : false;
-        $data['feed_ps_indexnow_service_status'] = isset($config['feed_ps_indexnow_service_status']) ? (int) $config['feed_ps_indexnow_service_status'] : 0;
+        $data['feed_ps_indexnow_service'] = isset($config['feed_ps_indexnow_service']) ? (int) $config['feed_ps_indexnow_service'] : 0;
         $data['feed_ps_indexnow_service_key'] = isset($config['feed_ps_indexnow_service_key']) ? $config['feed_ps_indexnow_service_key'] : '';
         $data['feed_ps_indexnow_service_key_location'] = isset($config['feed_ps_indexnow_service_key_location']) ? $config['feed_ps_indexnow_service_key_location'] : '';
 
@@ -227,20 +227,26 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('setting/store');
         $this->load->model('setting/setting');
 
+        $data = [
+            'feed_ps_indexnow_content_category' => [],
+            'feed_ps_indexnow_service_key_location' => '',
+            'feed_ps_indexnow_service_key' => '',
+            'feed_ps_indexnow_service' => 1, // IndexNow (global)
+            'feed_ps_indexnow_status' => 0,
+        ];
+
         $stores = array_merge([0], array_column($this->model_setting_store->getStores(), 'store_id'));
 
         foreach ($stores as $store_id) {
             $service_key = $this->save_service_key();
 
             if ($service_key) {
-                $data = [
-                    'feed_ps_indexnow_service_key' => $service_key,
-                    'feed_ps_indexnow_service_key_location' => $service_key . '.txt',
-                ];
-
-                $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
+                $data['feed_ps_indexnow_service_key'] = $service_key;
+                $data['feed_ps_indexnow_service_key_location'] = $service_key . '.txt';
             }
         }
+
+        $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
 
         $this->load->model('setting/event');
 
@@ -688,8 +694,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         if (!$json) {
             $config = $this->model_setting_setting->getSetting('feed_ps_indexnow', $store_id);
 
-            if (isset($config['feed_ps_indexnow_service_status'])) {
-                $serviceId = (int) $config['feed_ps_indexnow_service_status'];
+            if (isset($config['feed_ps_indexnow_service'])) {
+                $serviceId = (int) $config['feed_ps_indexnow_service'];
 
                 $service = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints($serviceId);
             } else {

@@ -45,8 +45,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
 
 
-        if (isset($config['feed_ps_indexnow_service_status'])) {
-            $serviceId = (int) $config['feed_ps_indexnow_service_status'];
+        if (isset($config['feed_ps_indexnow_service'])) {
+            $serviceId = (int) $config['feed_ps_indexnow_service'];
 
             $service = $this->model_extension_ps_indexnow_feed_ps_indexnow->getServiceEndpoints($serviceId);
         } else {

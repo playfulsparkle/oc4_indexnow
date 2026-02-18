@@ -57,7 +57,7 @@
 									<div id="product-store" class="form-control" style="height: 150px; overflow: auto;">
 										{% for indexnow_service in indexnow_services %}
 											<div class="form-check">
-												<input type="radio" name="feed_ps_indexnow_service_status" value="{{ indexnow_service.service_id }}" id="input-service-status-{{ indexnow_service.service_id }}" class="form-check-input"{% if indexnow_service.service_id == feed_ps_indexnow_service_status %} checked{% endif %}/>
+												<input type="radio" name="feed_ps_indexnow_service" value="{{ indexnow_service.service_id }}" id="input-service-status-{{ indexnow_service.service_id }}" class="form-check-input"{% if indexnow_service.service_id == feed_ps_indexnow_service %} checked{% endif %}/>
 												<label for="input-service-status-{{ indexnow_service.service_id }}" class="form-check-label">{{ indexnow_service.service_name }}</label>
 											</div>
 										{% endfor %}
