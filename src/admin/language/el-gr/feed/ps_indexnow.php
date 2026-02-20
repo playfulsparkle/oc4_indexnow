@@ -14,7 +14,7 @@ $_['text_success_clear_queue']            = 'Επιτυχία: Η ουρά κα�
 $_['text_success_submit_queue']           = 'Επιτυχία: Οι URL που τέθηκαν σε ουρά υποβλήθηκαν με επιτυχία!';
 $_['text_success_submit_url_list']        = 'Επιτυχία: Η λίστα URL υποβλήθηκε με επιτυχία!';
 $_['text_edit']                           = 'Επεξεργασία IndexNow';
-$_['text_contact']                        = '<p>Για περαιτέρω βοήθεια, επικοινωνήστε με την ομάδα υποστήριξής μας:</p><ul><li><strong>Επικοινωνία:</strong> <a href="mailto:%s">%s</a></li><li><strong>Τεκμηρίωση:</strong> <a href="%s" target="_blank" rel="noopener noreferrer">Εγχειρίδιο Χρήσης</a></li></ul>';
+$_['text_contact']                        = '<p>Για περαιτέρω βοήθεια, επικοινωνήστε με την ομάδα υποστήριξής μας:</p><ul><li><strong>Επικοινωνία:</strong> <a href="mailto:%s">%s</a></li><li><strong>Τεκμηρίωση:</strong> <a href="%s" target="_blank" rel="noopener noreferrer">Τεκμηρίωση χρήστη</a></li></ul>';
 $_['text_log_no_results']                 = 'Δεν υπάρχουν καταχωρήσεις στο αρχείο καταγραφής αυτή τη στιγμή.';
 $_['text_queue_no_results']               = 'Δεν υπάρχουν URL σε ουρά αυτή τη στιγμή.';
 $_['text_categories']                     = 'Οι κατηγορίες στον ιστότοπό σας προστίθενται, ενημερώνονται ή διαγράφονται';
