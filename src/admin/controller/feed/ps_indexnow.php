@@ -244,9 +244,9 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
                 $data['feed_ps_indexnow_service_key'] = $service_key;
                 $data['feed_ps_indexnow_service_key_location'] = $service_key . '.txt';
             }
-        }
 
-        $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
+            $this->model_setting_setting->editSetting('feed_ps_indexnow', $data, $store_id);
+        }
 
         $this->load->model('setting/event');
 
@@ -1087,7 +1087,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     }
 
     #region Category
-    public function eventAdminControllerCatalogCategorySaveAfter(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/catalog/category.save/after
+     *
+     * @param string $route
+     * @param array $args
+     * @param string $output
+     *
+     * @return void
+     */
+    public function eventAdminControllerCatalogCategorySaveAfter(&$route, &$args, &$output)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1118,7 +1127,15 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
     }
 
-    public function eventAdminControllerCatalogCategoryDeleteBefore(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/catalog/category.delete/before
+     *
+     * @param string $route
+     * @param array $args
+     *
+     * @return void
+     */
+    public function eventAdminControllerCatalogCategoryDeleteBefore(&$route, &$args)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1129,7 +1146,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('setting/store');
         $this->load->model('setting/setting');
 
-        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
+        $default_store = ['store_id' => 0, 'url' => HTTP_CATALOG];
+        $item_stores = array_merge([$default_store], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1140,7 +1158,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     #endregion
 
     #region Product
-    public function eventAdminControllerCatalogProductSaveAfter(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/catalog/product.save/after
+     *
+     * @param string $route
+     * @param array $args
+     * @param string $output
+     *
+     * @return void
+     */
+    public function eventAdminControllerCatalogProductSaveAfter(&$route, &$args, &$output)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1171,7 +1198,15 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
     }
 
-    public function eventAdminControllerCatalogProductDeleteBefore(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/catalog/product.delete/before
+     *
+     * @param string $route
+     * @param array $args
+     *
+     * @return void
+     */
+    public function eventAdminControllerCatalogProductDeleteBefore(&$route, &$args)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1182,7 +1217,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('setting/store');
         $this->load->model('setting/setting');
 
-        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
+        $default_store = ['store_id' => 0, 'url' => HTTP_CATALOG];
+        $item_stores = array_merge([$default_store], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1193,7 +1229,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     #endregion
 
     #region Manufacturer
-    public function eventAdminControllerCatalogManufacturerSaveAfter(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/catalog/manufacturer.save/after
+     *
+     * @param string $route
+     * @param array $args
+     * @param string $output
+     *
+     * @return void
+     */
+    public function eventAdminControllerCatalogManufacturerSaveAfter(&$route, &$args, &$output)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1226,7 +1271,15 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
     }
 
-    public function eventAdminControllerCatalogManufacturerDeleteBefore(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/catalog/manufacturer.delete/before
+     *
+     * @param string $route
+     * @param array $args
+     *
+     * @return void
+     */
+    public function eventAdminControllerCatalogManufacturerDeleteBefore(&$route, &$args)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1237,7 +1290,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('setting/store');
         $this->load->model('setting/setting');
 
-        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
+        $default_store = ['store_id' => 0, 'url' => HTTP_CATALOG];
+        $item_stores = array_merge([$default_store], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1250,7 +1304,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     #endregion
 
     #region Information
-    public function eventAdminControllerCatalogInformationSaveAfter(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/catalog/information.save/after
+     *
+     * @param string $route
+     * @param array $args
+     * @param string $output
+     *
+     * @return void
+     */
+    public function eventAdminControllerCatalogInformationSaveAfter(&$route, &$args, &$output)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1281,7 +1344,15 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
     }
 
-    public function eventAdminControllerCatalogInformationDeleteBefore(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/catalog/information.delete/before
+     *
+     * @param string $route
+     * @param array $args
+     *
+     * @return void
+     */
+    public function eventAdminControllerCatalogInformationDeleteBefore(&$route, &$args)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1292,7 +1363,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('setting/store');
         $this->load->model('setting/setting');
 
-        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
+        $default_store = ['store_id' => 0, 'url' => HTTP_CATALOG];
+        $item_stores = array_merge([$default_store], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1303,7 +1375,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     #endregion
 
     #region Topic
-    public function eventAdminControllerCmsTopicSaveAfter(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/cms/topic.save/after
+     *
+     * @param string $route
+     * @param array $args
+     * @param string $output
+     *
+     * @return void
+     */
+    public function eventAdminControllerCmsTopicSaveAfter(&$route, &$args, &$output)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1334,7 +1415,15 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
     }
 
-    public function eventAdminControllerCmsTopicDeleteBefore(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/cms/topic.delete/before
+     *
+     * @param string $route
+     * @param array $args
+     *
+     * @return void
+     */
+    public function eventAdminControllerCmsTopicDeleteBefore(&$route, &$args)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1345,7 +1434,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('setting/store');
         $this->load->model('setting/setting');
 
-        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
+        $default_store = ['store_id' => 0, 'url' => HTTP_CATALOG];
+        $item_stores = array_merge([$default_store], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1356,7 +1446,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
     #endregion
 
     #region Article
-    public function eventAdminControllerCmsArticleSaveAfter(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/cms/article.save/after
+     *
+     * @param string $route
+     * @param array $args
+     * @param string $output
+     *
+     * @return void
+     */
+    public function eventAdminControllerCmsArticleSaveAfter(&$route, &$args, &$output)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1392,7 +1491,15 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         }
     }
 
-    public function eventAdminControllerCmsArticleDeleteBefore(string &$route, array &$args): void
+    /**
+     * Event: admin/controller/cms/article.delete/before
+     *
+     * @param string $route
+     * @param array $args
+     *
+     * @return void
+     */
+    public function eventAdminControllerCmsArticleDeleteBefore(&$route, &$args)
     {
         if (!$this->config->get('feed_ps_indexnow_status')) {
             return;
@@ -1404,7 +1511,8 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
         $this->load->model('setting/setting');
         $this->load->model('cms/article');
 
-        $item_stores = array_merge([0 => HTTP_CATALOG], $this->model_setting_store->getStores());
+        $default_store = ['store_id' => 0, 'url' => HTTP_CATALOG];
+        $item_stores = array_merge([$default_store], $this->model_setting_store->getStores());
         $languages = $this->model_localisation_language->getLanguages();
         $content_hash = md5(json_encode($this->request->post));
 
@@ -1454,7 +1562,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
             }
 
             foreach ($languages as $language) {
-                $url = $store_url . sprintf($item_link, $language['code']);
+                $url = rtrim($store_url, '/') . '/' . sprintf($item_link, $language['code']);
 
                 if ($this->config->get('config_seo_url')) {
                     $url = $this->rewrite($url, $store_id, $language['language_id']);
@@ -1713,7 +1821,7 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
      * If positions are specified, the method performs replacements only at those positions.
      *
      * @param string $route The route associated with the template.
-     * @param string $template The name of the template to be processed.
+     * @param string|null $template The name of the template to be processed.
      * @param array $views An array of associative arrays where each associative array contains:
      *                     - string 'search': The string to search for in the template.
      *                     - string 'replace': The string to replace the 'search' string with.
@@ -1723,8 +1831,16 @@ class PsIndexNow extends \Opencart\System\Engine\Controller
      *
      * @return mixed The modified template content after performing the replacements.
      */
-    protected function replaceViews(string $route, string $template, array $views): mixed
+    protected function replaceViews(string $route, string|null $template, array $views): mixed
     {
+        if (is_null($template)) {
+            $template = '';
+        }
+
+        if (empty($views)) {
+            return $this->getTemplateBuffer($route, $template);
+        }
+
         $output = $this->getTemplateBuffer($route, $template);
 
         foreach ($views as $view) {
