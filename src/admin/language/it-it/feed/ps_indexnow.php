@@ -14,7 +14,7 @@ $_['text_success_clear_queue']            = 'Successo: La coda è stata svuotata
 $_['text_success_submit_queue']           = 'Successo: Gli URL in coda sono stati inviati correttamente!';
 $_['text_success_submit_url_list']        = 'Successo: La lista degli URL è stata inviata correttamente!';
 $_['text_edit']                           = 'Modifica IndexNow';
-$_['text_contact']                        = '<p>Per ulteriore assistenza, contatta il nostro team di supporto:</p><ul><li><strong>Contatto:</strong> <a href="mailto:%s">%s</a></li><li><strong>Documentazione:</strong> <a href="%s" target="_blank" rel="noopener noreferrer">Documentazione Utente</a></li></ul>';
+$_['text_contact']                        = '<p>Per ulteriore assistenza, si prega di contattare il nostro team di supporto:</p><ul><li><strong>Sito web di supporto:</strong> <a href="%1$s">%1$s</a></li><li><strong>Repository GitHub:</strong> <a href="%2$s" target="_blank" rel="noopener noreferrer">%2$s</a></li><li><strong>Contatta il supporto:</strong> <a href="mailto:%3$s">%3$s</a></li></ul>';
 $_['text_log_no_results']                 = 'Al momento non sono disponibili voci di log.';
 $_['text_queue_no_results']               = 'Non ci sono URL in coda al momento.';
 $_['text_categories']                     = 'Le categorie sul tuo sito sono aggiunte, aggiornate o eliminate.';
